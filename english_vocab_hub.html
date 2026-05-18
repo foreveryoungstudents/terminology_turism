@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Maps · Tourism & Hospitality English</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #012169;
+  --red:    #C8102E;
+  --white:  #ffffff;
+  --paper:  #f4f6fb;
+  --border: #c8d4ec;
+  --muted:  #6b7ca6;
+  --text:   #0d1a3a;
+  --light:  #e8edf8;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--paper);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--navy);
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.site-title {
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.site-title span {
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+  margin-left: 6px;
+  font-size: 13px;
+}
+.teacher-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.5);
+  border-radius: 3px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.teacher-btn:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.85); }
+.teacher-btn.active { border-color: var(--red); color: #fff; background: var(--red); }
+
+/* ── TOOLBAR (teacher only) ── */
+.toolbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2rem;
+  display: none;
+  gap: 10px;
+  align-items: center;
+}
+.toolbar.visible { display: flex; }
+.search-box {
+  flex: 1;
+  min-width: 180px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 11px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--text);
+  outline: none;
+  background: var(--paper);
+  transition: border-color 0.15s;
+}
+.search-box:focus { border-color: var(--navy); }
+.search-box::placeholder { color: var(--muted); }
+.add-btn {
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 3px;
+  padding: 6px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.add-btn:hover { background: #021f5c; }
+
+/* search also visible for students */
+.search-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2rem;
+}
+.search-wrap .search-box { width: 100%; max-width: 420px; }
+
+/* ── MAIN ── */
+main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+}
+
+.grid-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+}
+
+/* ── CARDS ── */
+#card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.1rem 1.1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: box-shadow 0.15s;
+  animation: fadeUp 0.25s ease both;
+}
+.card:hover { box-shadow: 0 2px 12px rgba(1,33,105,0.08); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.card-actions {
+  display: none;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.teacher-mode .card-actions { display: flex; }
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  transition: all 0.12s;
+}
+.icon-btn:hover { border-color: var(--navy); color: var(--navy); }
+.icon-btn.del:hover { border-color: var(--red); color: var(--red); }
+
+.card-desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  flex: 1;
+}
+.card-topic {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.card-foot {
+  border-top: 1px solid var(--light);
+  padding-top: 0.7rem;
+  margin-top: 0.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-date { font-size: 11px; color: var(--border); }
+.card-link {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--navy);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.13s;
+}
+.card-link:hover { color: var(--red); }
+.card-link svg { width: 11px; height: 11px; }
+
+/* ── EMPTY ── */
+#empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--muted);
+  font-size: 13.5px;
+  display: none;
+}
+
+/* ── PASSWORD MODAL ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(1,33,105,0.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 400;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s;
+  padding: 1rem;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.dialog {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  width: 100%; max-width: 340px;
+  padding: 1.8rem;
+  transform: translateY(8px);
+  transition: transform 0.18s;
+}
+.overlay.open .dialog { transform: translateY(0); }
+.dialog h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+.dialog input[type=password] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 7px 11px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s;
+}
+.dialog input[type=password]:focus { border-color: var(--navy); }
+.err-msg { font-size: 12px; color: var(--red); min-height: 16px; margin-bottom: 0.8rem; }
+.dialog-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-sec {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.btn-sec:hover { color: var(--text); }
+.btn-pri {
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 3px;
+  padding: 6px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.btn-pri:hover { background: var(--red); }
+
+/* ── CARD MODAL ── */
+.card-overlay {
+  position: fixed; inset: 0;
+  background: rgba(1,33,105,0.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s;
+  padding: 1rem;
+}
+.card-overlay.open { opacity: 1; pointer-events: all; }
+.card-dialog {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  width: 100%; max-width: 420px;
+  padding: 1.8rem;
+  transform: translateY(8px);
+  transition: transform 0.18s;
+}
+.card-overlay.open .card-dialog { transform: translateY(0); }
+.card-dialog h2 { font-size: 15px; font-weight: 600; margin-bottom: 1.2rem; color: var(--text); }
+.fg { display: flex; flex-direction: column; gap: 4px; margin-bottom: 0.9rem; }
+.fg label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.fg input, .fg textarea {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  background: var(--paper);
+}
+.fg input:focus, .fg textarea:focus { border-color: var(--navy); background: var(--white); }
+.fg textarea { resize: vertical; min-height: 56px; }
+.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 1.2rem; right: 1.2rem;
+  background: var(--navy);
+  color: var(--white);
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 13px;
+  z-index: 600;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.18s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+footer strong { color: var(--navy); }
+
+@media (max-width: 500px) {
+  header { padding: 1rem 1.2rem; }
+  main { padding: 1.5rem 1.2rem 3rem; }
+  #card-grid { grid-template-columns: 1fr; }
+  .search-wrap, .toolbar { padding: 0.7rem 1.2rem; }
+  .fg-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="site-title">
+    Vocabulary Maps
+    <span>Tourism & Hospitality English</span>
+  </div>
+  <button class="teacher-btn" id="teacherToggle" onclick="teacherClick()">Teacher</button>
+</header>
+
+<!-- STUDENT SEARCH -->
+<div class="search-wrap" id="studentSearch">
+  <input class="search-box" type="text" id="searchInput" placeholder="Search…" oninput="renderCards()">
+</div>
+
+<!-- TEACHER TOOLBAR -->
+<div class="toolbar" id="toolbar">
+  <input class="search-box" type="text" id="searchInputTeacher" placeholder="Search…" oninput="renderCards()">
+  <button class="add-btn" onclick="openCardModal()">+ Add</button>
+</div>
+
+<!-- MAIN -->
+<main>
+  <p class="grid-label" id="gridLabel">Materials</p>
+  <div id="card-grid"></div>
+  <div id="empty-state">No materials yet.</div>
+</main>
+
+<footer><strong>Tourism & Hospitality English</strong> · Vocabulary Resource Hub</footer>
+
+<!-- PASSWORD MODAL -->
+<div class="overlay" id="pwOverlay">
+  <div class="dialog">
+    <h2>Teacher access</h2>
+    <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="err-msg" id="pwErr"></div>
+    <div class="dialog-btns">
+      <button class="btn-sec" onclick="closePwModal()">Cancel</button>
+      <button class="btn-pri" onclick="checkPw()">Enter</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARD MODAL -->
+<div class="card-overlay" id="cardOverlay" onclick="handleCardBackdrop(event)">
+  <div class="card-dialog">
+    <h2 id="cardModalTitle">Add card</h2>
+    <div class="fg">
+      <label>Title *</label>
+      <input type="text" id="fTitle" placeholder="e.g. Moscow — City Overview">
+    </div>
+    <div class="fg">
+      <label>Description</label>
+      <textarea id="fDesc" placeholder="Short note for students…"></textarea>
+    </div>
+    <div class="fg">
+      <label>Link (URL) *</label>
+      <input type="url" id="fUrl" placeholder="moscow_vocabulary_map.html">
+    </div>
+    <div class="fg-row">
+      <div class="fg">
+        <label>Topic</label>
+        <input type="text" id="fTag" placeholder="e.g. Cities">
+      </div>
+      <div class="fg">
+        <label>Icon</label>
+        <input type="text" id="fIcon" placeholder="📖" maxlength="2">
+      </div>
+    </div>
+    <div class="dialog-btns" style="margin-top:1.2rem">
+      <button class="btn-sec" onclick="closeCardModal()">Cancel</button>
+      <button class="btn-pri" onclick="saveCard()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+// Change this password to whatever you like:
+const TEACHER_PASSWORD = 'english2026';
+// ────────────────────────────────────────────────────────
+
+const DEMO = [
+  {
+    id: 1,
+    title: 'Moscow — City Overview',
+    desc: '35 terms: vocabulary, phrases & clichés with IPA and audio.',
+    url: 'moscow_vocabulary_map.html',
+    tag: 'Cities',
+    icon: '🏛️',
+    date: '2026-05-14'
+  }
+];
+
+let cards = JSON.parse(localStorage.getItem('vocabHub_v2') || 'null') || DEMO;
+let teacherMode = false;
+let editId = null;
+
+function saveData() { localStorage.setItem('vocabHub_v2', JSON.stringify(cards)); }
+
+// ── TEACHER AUTH ─────────────────────────────────────────
+function teacherClick() {
+  if (teacherMode) { logOut(); return; }
+  openPwModal();
+}
+function openPwModal() {
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').textContent = '';
+  document.getElementById('pwOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('pwInput').focus(), 180);
+}
+function closePwModal() {
+  document.getElementById('pwOverlay').classList.remove('open');
+}
+function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === TEACHER_PASSWORD) {
+    closePwModal();
+    activateTeacher();
+  } else {
+    document.getElementById('pwErr').textContent = 'Incorrect password.';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+function activateTeacher() {
+  teacherMode = true;
+  document.body.classList.add('teacher-mode');
+  document.getElementById('teacherToggle').classList.add('active');
+  document.getElementById('teacherToggle').textContent = 'Exit';
+  document.getElementById('toolbar').classList.add('visible');
+  document.getElementById('studentSearch').style.display = 'none';
+  showToast('Teacher mode on');
+}
+function logOut() {
+  teacherMode = false;
+  document.body.classList.remove('teacher-mode');
+  document.getElementById('teacherToggle').classList.remove('active');
+  document.getElementById('teacherToggle').textContent = 'Teacher';
+  document.getElementById('toolbar').classList.remove('visible');
+  document.getElementById('studentSearch').style.display = '';
+  showToast('Logged out');
+}
+
+// ── CARD MODAL ───────────────────────────────────────────
+function openCardModal(id) {
+  if (!teacherMode) return;
+  editId = id || null;
+  document.getElementById('cardModalTitle').textContent = id ? 'Edit card' : 'Add card';
+  if (id) {
+    const c = cards.find(x => x.id === id);
+    document.getElementById('fTitle').value = c.title;
+    document.getElementById('fDesc').value  = c.desc || '';
+    document.getElementById('fUrl').value   = c.url;
+    document.getElementById('fTag').value   = c.tag || '';
+    document.getElementById('fIcon').value  = c.icon || '📖';
+  } else {
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fDesc').value  = '';
+    document.getElementById('fUrl').value   = '';
+    document.getElementById('fTag').value   = '';
+    document.getElementById('fIcon').value  = '📖';
+  }
+  document.getElementById('cardOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('fTitle').focus(), 180);
+}
+function closeCardModal() {
+  document.getElementById('cardOverlay').classList.remove('open');
+  editId = null;
+}
+function handleCardBackdrop(e) {
+  if (e.target === document.getElementById('cardOverlay')) closeCardModal();
+}
+function saveCard() {
+  const title = document.getElementById('fTitle').value.trim();
+  const url   = document.getElementById('fUrl').value.trim();
+  if (!title || !url) { showToast('Title and link are required.'); return; }
+  const card = {
+    id:    editId || Date.now(),
+    title,
+    desc:  document.getElementById('fDesc').value.trim(),
+    url,
+    tag:   document.getElementById('fTag').value.trim(),
+    icon:  document.getElementById('fIcon').value.trim() || '📖',
+    date:  new Date().toISOString().slice(0,10)
+  };
+  if (editId) {
+    cards = cards.map(c => c.id === editId ? card : c);
+    showToast('Updated ✓');
+  } else {
+    cards.unshift(card);
+    showToast('Card added ✓');
+  }
+  saveData();
+  closeCardModal();
+  renderCards();
+}
+function deleteCard(id) {
+  if (!teacherMode) return;
+  if (!confirm('Delete this card?')) return;
+  cards = cards.filter(c => c.id !== id);
+  saveData();
+  renderCards();
+  showToast('Deleted.');
+}
+
+// ── RENDER ───────────────────────────────────────────────
+function getQuery() {
+  const s = teacherMode ? 'searchInputTeacher' : 'searchInput';
+  return document.getElementById(s).value.toLowerCase();
+}
+function renderCards() {
+  const q = getQuery();
+  const grid  = document.getElementById('card-grid');
+  const empty = document.getElementById('empty-state');
+  const label = document.getElementById('gridLabel');
+
+  const rows = cards.filter(c => {
+    return !q || c.title.toLowerCase().includes(q)
+               || (c.tag  ||'').toLowerCase().includes(q)
+               || (c.desc ||'').toLowerCase().includes(q);
+  });
+
+  label.textContent = `${rows.length} material${rows.length !== 1 ? 's' : ''}`;
+
+  if (!rows.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = rows.map((c, i) => `
+    <div class="card" style="animation-delay:${i*0.04}s">
+      <div class="card-head">
+        <div class="card-title">${c.icon ? c.icon+' ' : ''}${c.title}</div>
+        <div class="card-actions">
+          <button class="icon-btn" title="Edit" onclick="openCardModal(${c.id})">✏</button>
+          <button class="icon-btn del" title="Delete" onclick="deleteCard(${c.id})">✕</button>
+        </div>
+      </div>
+      ${c.desc ? `<div class="card-desc">${c.desc}</div>` : ''}
+      ${c.tag  ? `<div class="card-topic">${c.tag}</div>` : ''}
+      <div class="card-foot">
+        <span class="card-date">${fmtDate(c.date)}</span>
+        <a class="card-link" href="${c.url}" target="_blank">
+          Open
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 10L10 2M4.5 2H10v5.5"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  try { return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
+  catch { return d; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePwModal(); closeCardModal(); }
+  if (e.key === 'Enter' && document.getElementById('pwOverlay').classList.contains('open')) checkPw();
+});
+
+renderCards();
+</script>
+</body>
+</html>
