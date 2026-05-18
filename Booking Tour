@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agency Pronunciation Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .category-selector {
+            margin-bottom: 30px;
+        }
+
+        .category-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .category-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .phrase-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #dee2e6;
+        }
+
+        .phrase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .phrase-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .speaker-badge {
+            background: #764ba2;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .phrase-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-listen {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-listen:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-record {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-record:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-record.recording {
+            background: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .btn-slow {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-slow:hover {
+            background: #5a6268;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-excellent { background: #28a745; }
+        .score-good { background: #17a2b8; }
+        .score-fair { background: #ffc107; color: #333; }
+        .score-poor { background: #dc3545; }
+
+        .feedback-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .feedback-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+
+        .feedback-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .feedback-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tips {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .tips-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-nav {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-nav:hover {
+            background: #5a6268;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .recording-status {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .phonetic {
+            color: #667eea;
+            font-size: 16px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .translation {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Travel Agency Pronunciation Trainer</h1>
+            <p>Master professional English phrases for tourism industry</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalPracticed">0</div>
+                <div class="stat-label">Practiced</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="avgScore">0%</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="category-selector">
+                <label for="category">Choose a category:</label>
+                <select id="category">
+                    <option value="all">All Phrases</option>
+                    <option value="greeting">Greeting & Starting Conversation</option>
+                    <option value="destination">Destination & Preferences</option>
+                    <option value="dates">Dates & Duration</option>
+                    <option value="travelers">Number of Travelers</option>
+                    <option value="accommodation">Accommodation</option>
+                    <option value="transport">Transport & Flights</option>
+                    <option value="price">Price & Budget</option>
+                    <option value="visa">Visa & Documents</option>
+                    <option value="activities">Activities & Excursions</option>
+                    <option value="booking">Booking Confirmation</option>
+                    <option value="changes">Changes & Cancellation</option>
+                    <option value="closing">Closing Conversation</option>
+                </select>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+
+            <div class="phrase-card" id="phraseCard">
+                <div class="phrase-header">
+                    <span class="phrase-number" id="phraseNumber">1 / 120</span>
+                    <span class="speaker-badge" id="speakerBadge">Client</span>
+                </div>
+                <div class="phrase-text" id="phraseText">I'd like to book a tour.</div>
+                <div class="translation" id="translation">Я хотел бы забронировать тур.</div>
+                
+                <div class="controls">
+                    <button class="btn-listen" id="listenBtn">
+                        <span>🔊</span> Listen
+                    </button>
+                    <button class="btn-slow" id="slowBtn">
+                        <span>🐢</span> Slow
+                    </button>
+                    <button class="btn-record" id="recordBtn">
+                        <span>🎤</span> Record
+                    </button>
+                </div>
+
+                <div class="recording-status" id="recordingStatus"></div>
+
+                <div class="feedback" id="feedback">
+                    <div class="score">
+                        <div class="score-circle" id="scoreCircle">85%</div>
+                        <div id="scoreLabel">Excellent!</div>
+                    </div>
+                    <div class="feedback-details">
+                        <div class="feedback-item">
+                            <span class="feedback-label">Accuracy</span>
+                            <span class="feedback-value" id="accuracyScore">90%</span>
+                        </div>
+                        <div class="feedback-item">
+                            <span class="feedback-label">Fluency</span>
+                            <span class="feedback-value" id="fluencyScore">85%</span>
+                        </div>
+                        <div class="feedback-item">
+                            <span class="feedback-label">Pronunciation</span>
+                            <span class="feedback-value" id="pronunciationScore">80%</span>
+                        </div>
+                    </div>
+                    <div class="tips">
+                        <div class="tips-title">💡 Tips for improvement:</div>
+                        <div class="tips-text" id="tipsText">
+                            Focus on the /ʊ/ sound in "book". Practice stress on "LIKE" and "TOUR".
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn-nav" id="prevBtn">⬅ Previous</button>
+                    <button class="btn-nav" id="nextBtn">Next ➡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const phrases = {
+            greeting: {
+                client: [
+                    { text: "I'd like to book a tour.", translation: "Я хотел бы забронировать тур." },
+                    { text: "I'm interested in booking a holiday package.", translation: "Я заинтересован в бронировании турпакета." },
+                    { text: "I want to plan a trip for two people.", translation: "Я хочу спланировать поездку на двоих." },
+                    { text: "Can you help me find a suitable tour?", translation: "Можете помочь мне найти подходящий тур?" },
+                    { text: "I'm looking for a vacation deal.", translation: "Я ищу выгодное предложение по отпуску." },
+                    { text: "Good morning, I'd like some information about tours.", translation: "Доброе утро, я хотел бы получить информацию о турах." }
+                ],
+                agent: [
+                    { text: "Welcome! How can I help you today?", translation: "Добро пожаловать! Чем могу помочь сегодня?" },
+                    { text: "Good afternoon! What kind of trip are you looking for?", translation: "Добрый день! Какую поездку вы ищете?" },
+                    { text: "Sure, I'd be happy to assist you.", translation: "Конечно, я буду рад вам помочь." },
+                    { text: "Please have a seat. Let's find the perfect tour for you.", translation: "Присаживайтесь, пожалуйста. Давайте найдем идеальный тур для вас." },
+                    { text: "Could I get your name, please?", translation: "Могу я узнать ваше имя?" }
+                ]
+            },
+            destination: {
+                common: [
+                    { text: "Where would you like to go?", translation: "Куда бы вы хотели поехать?" },
+                    { text: "Do you have a particular destination in mind?", translation: "У вас есть конкретное направление?" },
+                    { text: "I'd like to go somewhere warm.", translation: "Я хотел бы поехать куда-нибудь в тепло." },
+                    { text: "We're thinking about Europe.", translation: "Мы думаем о Европе." },
+                    { text: "I'm open to suggestions.", translation: "Я открыт для предложений." },
+                    { text: "We'd prefer a beach holiday.", translation: "Мы бы предпочли пляжный отдых." },
+                    { text: "Do you have any all-inclusive packages?", translation: "У вас есть пакеты «всё включено»?" },
+                    { text: "We'd like a family-friendly destination.", translation: "Нам нужно место, подходящее для семей." },
+                    { text: "Any recommendations for a honeymoon destination?", translation: "Какие рекомендации по направлению для медового месяца?" }
+                ]
+            },
+            dates: {
+                common: [
+                    { text: "When are you planning to travel?", translation: "Когда вы планируете путешествовать?" },
+                    { text: "We'd like to travel in July.", translation: "Мы хотели бы поехать в июле." },
+                    { text: "How long would you like the trip to be?", translation: "Как долго должна длиться поездка?" },
+                    { text: "We're thinking about seven nights.", translation: "Мы думаем о семи ночах." },
+                    { text: "Are the dates flexible?", translation: "Даты гибкие?" },
+                    { text: "We can travel any time in August.", translation: "Мы можем поехать в любое время в августе." },
+                    { text: "We need to be back by the twentieth.", translation: "Нам нужно вернуться к двадцатому числу." },
+                    { text: "What's the departure date for that tour?", translation: "Какая дата отправления этого тура?" }
+                ]
+            },
+            travelers: {
+                common: [
+                    { text: "How many people will be travelling?", translation: "Сколько человек будет путешествовать?" },
+                    { text: "It will be just the two of us.", translation: "Нас будет только двое." },
+                    { text: "There are four of us — two adults and two children.", translation: "Нас четверо — двое взрослых и двое детей." },
+                    { text: "We're a group of eight.", translation: "Нас группа из восьми человек." },
+                    { text: "One of the children is under twelve.", translation: "Одному из детей меньше двенадцати." },
+                    { text: "I'll be travelling alone.", translation: "Я буду путешествовать один." }
+                ]
+            },
+            accommodation: {
+                common: [
+                    { text: "What type of accommodation do you prefer?", translation: "Какой тип размещения вы предпочитаете?" },
+                    { text: "We'd like a four-star hotel.", translation: "Мы хотели бы четырёхзвёздочный отель." },
+                    { text: "Do you offer any budget options?", translation: "У вас есть бюджетные варианты?" },
+                    { text: "We'd prefer a room with a sea view.", translation: "Мы бы предпочли номер с видом на море." },
+                    { text: "Is breakfast included?", translation: "Завтрак включён?" },
+                    { text: "We'd like half board.", translation: "Мы хотели бы полупансион." },
+                    { text: "We need a room with a double bed.", translation: "Нам нужен номер с двуспальной кроватью." },
+                    { text: "Do they have a swimming pool?", translation: "У них есть бассейн?" },
+                    { text: "Is the hotel close to the beach?", translation: "Отель близко к пляжу?" }
+                ]
+            },
+            transport: {
+                common: [
+                    { text: "Are flights included in the package?", translation: "Перелёты включены в пакет?" },
+                    { text: "Which airport do we fly from?", translation: "Из какого аэропорта мы летим?" },
+                    { text: "We'd prefer a direct flight.", translation: "Мы бы предпочли прямой рейс." },
+                    { text: "How long is the flight?", translation: "Сколько длится перелёт?" },
+                    { text: "Is airport transfer included?", translation: "Трансфер из аэропорта включён?" },
+                    { text: "What time does the flight depart?", translation: "Во сколько вылет?" },
+                    { text: "Do we need to arrange our own transport?", translation: "Нам нужно организовать свой транспорт?" },
+                    { text: "Can we upgrade to business class?", translation: "Можем ли мы перейти в бизнес-класс?" }
+                ]
+            },
+            price: {
+                common: [
+                    { text: "What's your budget per person?", translation: "Какой у вас бюджет на человека?" },
+                    { text: "We're looking to spend around fifteen hundred euros per person.", translation: "Мы хотим потратить около 1500 евро на человека." },
+                    { text: "How much does this package cost in total?", translation: "Сколько стоит этот пакет в общей сложности?" },
+                    { text: "Are there any discounts available?", translation: "Есть ли какие-нибудь скидки?" },
+                    { text: "Do you have any early booking offers?", translation: "У вас есть предложения при раннем бронировании?" },
+                    { text: "Is there a cheaper alternative?", translation: "Есть более дешёвая альтернатива?" },
+                    { text: "What's included in the price?", translation: "Что включено в цену?" },
+                    { text: "Are there any hidden fees?", translation: "Есть какие-нибудь скрытые платежи?" },
+                    { text: "What is not covered by the package?", translation: "Что не покрывается пакетом?" },
+                    { text: "Do you offer a payment plan?", translation: "Вы предлагаете план платежей?" }
+                ]
+            },
+            visa: {
+                common: [
+                    { text: "Do we need a visa for that destination?", translation: "Нам нужна виза для этого направления?" },
+                    { text: "Can you assist with the visa application?", translation: "Вы можете помочь с оформлением визы?" },
+                    { text: "What documents do we need to provide?", translation: "Какие документы нам нужно предоставить?" },
+                    { text: "How long does it take to get a visa?", translation: "Сколько времени занимает получение визы?" },
+                    { text: "Is travel insurance included?", translation: "Страховка включена?" },
+                    { text: "Do you recommend travel insurance?", translation: "Вы рекомендуете туристическую страховку?" },
+                    { text: "What vaccinations are required?", translation: "Какие прививки требуются?" }
+                ]
+            },
+            activities: {
+                common: [
+                    { text: "Are there any excursions available?", translation: "Доступны ли какие-нибудь экскурсии?" },
+                    { text: "What activities are included in the tour?", translation: "Какие мероприятия включены в тур?" },
+                    { text: "We'd like to go snorkelling.", translation: "Мы хотели бы заняться снорклингом." },
+                    { text: "Is there a guided tour of the city?", translation: "Есть ли организованная экскурсия по городу?" },
+                    { text: "Can we book excursions separately?", translation: "Можем ли мы забронировать экскурсии отдельно?" },
+                    { text: "Are there activities for children?", translation: "Есть мероприятия для детей?" }
+                ]
+            },
+            booking: {
+                common: [
+                    { text: "I'd like to book this tour.", translation: "Я хотел бы забронировать этот тур." },
+                    { text: "We'll take this package.", translation: "Мы возьмём этот пакет." },
+                    { text: "Can we confirm the booking today?", translation: "Можем ли мы подтвердить бронирование сегодня?" },
+                    { text: "What's the deposit to secure the booking?", translation: "Какой депозит для подтверждения бронирования?" },
+                    { text: "When is the full payment due?", translation: "Когда нужна полная оплата?" },
+                    { text: "Can I pay by card?", translation: "Могу я оплатить картой?" },
+                    { text: "When will we receive our booking confirmation?", translation: "Когда мы получим подтверждение бронирования?" },
+                    { text: "Could you send the details to my email?", translation: "Вы можете отправить детали на мою почту?" },
+                    { text: "I'll need to think about it and come back to you.", translation: "Мне нужно подумать и вернуться к вам." },
+                    { text: "Can you hold this for twenty-four hours?", translation: "Можете ли вы придержать это на 24 часа?" }
+                ]
+            },
+            changes: {
+                common: [
+                    { text: "What is the cancellation policy?", translation: "Какие условия отмены?" },
+                    { text: "Can we change the travel dates?", translation: "Можем ли мы изменить даты поездки?" },
+                    { text: "Is there a fee for modifications?", translation: "Есть ли плата за изменения?" },
+                    { text: "What happens if we need to cancel?", translation: "Что будет, если нам нужно отменить?" },
+                    { text: "Is the deposit refundable?", translation: "Депозит возвращается?" },
+                    { text: "Can we add an extra person to the booking?", translation: "Можем ли мы добавить ещё одного человека в бронирование?" }
+                ]
+            },
+            closing: {
+                common: [
+                    { text: "Thank you for your help.", translation: "Спасибо за вашу помощь." },
+                    { text: "You've been very helpful, thank you.", translation: "Вы были очень полезны, спасибо." },
+                    { text: "We'll be in touch soon.", translation: "Мы скоро свяжемся." },
+                    { text: "I look forward to our trip!", translation: "Я с нетерпением жду нашей поездки!" },
+                    { text: "Have a great day!", translation: "Хорошего дня!" },
+                    { text: "We'll contact you if we have any questions.", translation: "Мы свяжемся с вами, если у нас возникнут вопросы." },
+                    { text: "Thank you for choosing our agency. Enjoy your trip!", translation: "Спасибо, что выбрали наше агентство. Приятной поездки!" }
+                ]
+            }
+        };
+
+        let allPhrases = [];
+        let currentPhraseIndex = 0;
+        let stats = {
+            totalPracticed: 0,
+            scores: [],
+            streak: 0
+        };
+
+        // Flatten all phrases
+        function flattenPhrases() {
+            allPhrases = [];
+            Object.keys(phrases).forEach(category => {
+                Object.keys(phrases[category]).forEach(type => {
+                    phrases[category][type].forEach(phrase => {
+                        allPhrases.push({
+                            ...phrase,
+                            category,
+                            speaker: type === 'agent' ? 'Agent' : type === 'client' ? 'Client' : 'Common'
+                        });
+                    });
+                });
+            });
+        }
+
+        flattenPhrases();
+
+        // Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isRecording = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+        }
+
+        // Elements
+        const categorySelect = document.getElementById('category');
+        const phraseText = document.getElementById('phraseText');
+        const translation = document.getElementById('translation');
+        const phraseNumber = document.getElementById('phraseNumber');
+        const speakerBadge = document.getElementById('speakerBadge');
+        const listenBtn = document.getElementById('listenBtn');
+        const slowBtn = document.getElementById('slowBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const feedback = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressFill = document.getElementById('progressFill');
+
+        // Display current phrase
+        function displayPhrase() {
+            const phrase = allPhrases[currentPhraseIndex];
+            phraseText.textContent = phrase.text;
+            translation.textContent = phrase.translation;
+            phraseNumber.textContent = `${currentPhraseIndex + 1} / ${allPhrases.length}`;
+            speakerBadge.textContent = phrase.speaker;
+            feedback.classList.remove('show');
+            
+            const progress = ((currentPhraseIndex + 1) / allPhrases.length) * 100;
+            progressFill.style.width = progress + '%';
+
+            prevBtn.disabled = currentPhraseIndex === 0;
+            nextBtn.disabled = currentPhraseIndex === allPhrases.length - 1;
+        }
+
+        // Text-to-Speech
+        function speak(text, rate = 1) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Listen button
+        listenBtn.addEventListener('click', () => {
+            speak(allPhrases[currentPhraseIndex].text, 1);
+        });
+
+        // Slow button
+        slowBtn.addEventListener('click', () => {
+            speak(allPhrases[currentPhraseIndex].text, 0.7);
+        });
+
+        // Record button
+        recordBtn.addEventListener('click', () => {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<span>🎤</span> Record';
+                recordingStatus.textContent = '';
+            } else {
+                recognition.start();
+                isRecording = true;
+                recordBtn.classList.add('recording');
+                recordBtn.innerHTML = '<span>⏹</span> Stop';
+                recordingStatus.textContent = 'Listening...';
+            }
+        });
+
+        // Recognition result
+        if (recognition) {
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const confidence = event.results[0][0].confidence;
+                evaluatePronunciation(transcript, confidence);
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<span>🎤</span> Record';
+                recordingStatus.textContent = '';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Recognition error:', event.error);
+                recordingStatus.textContent = 'Error: ' + event.error;
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<span>🎤</span> Record';
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<span>🎤</span> Record';
+            };
+        }
+
+        // Evaluate pronunciation
+        function evaluatePronunciation(transcript, confidence) {
+            const original = allPhrases[currentPhraseIndex].text.toLowerCase();
+            const spoken = transcript.toLowerCase();
+
+            // Calculate similarity
+            const similarity = calculateSimilarity(original, spoken);
+            const score = Math.round((similarity * 0.7 + confidence * 0.3) * 100);
+
+            // Update stats
+            stats.totalPracticed++;
+            stats.scores.push(score);
+            if (score >= 70) {
+                stats.streak++;
+            } else {
+                stats.streak = 0;
+            }
+            updateStats();
+
+            // Display feedback
+            displayFeedback(score, spoken, original);
+        }
+
+        // Calculate string similarity (Levenshtein distance based)
+        function calculateSimilarity(s1, s2) {
+            const longer = s1.length > s2.length ? s1 : s2;
+            const shorter = s1.length > s2.length ? s2 : s1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const editDistance = levenshteinDistance(longer, shorter);
+            return (longer.length - editDistance) / longer.length;
+        }
+
+        function levenshteinDistance(s1, s2) {
+            const costs = [];
+            for (let i = 0; i <= s1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= s2.length; j++) {
+                    if (i === 0) {
+                        costs[j] = j;
+                    } else if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+                if (i > 0) costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
+
+        // Display feedback
+        function displayFeedback(score, spoken, original) {
+            const scoreCircle = document.getElementById('scoreCircle');
+            const scoreLabel = document.getElementById('scoreLabel');
+            const accuracyScore = document.getElementById('accuracyScore');
+            const fluencyScore = document.getElementById('fluencyScore');
+            const pronunciationScore = document.getElementById('pronunciationScore');
+            const tipsText = document.getElementById('tipsText');
+
+            scoreCircle.textContent = score + '%';
+            
+            // Determine score category
+            if (score >= 85) {
+                scoreCircle.className = 'score-circle score-excellent';
+                scoreLabel.textContent = 'Excellent! 🌟';
+                tipsText.textContent = 'Perfect pronunciation! You sound like a native speaker. Keep up the great work!';
+            } else if (score >= 70) {
+                scoreCircle.className = 'score-circle score-good';
+                scoreLabel.textContent = 'Good! 👍';
+                tipsText.textContent = 'Very good! Minor improvements needed. Focus on word stress and intonation.';
+            } else if (score >= 50) {
+                scoreCircle.className = 'score-circle score-fair';
+                scoreLabel.textContent = 'Fair 📚';
+                tipsText.textContent = 'Keep practicing! Listen carefully to the model pronunciation and repeat multiple times.';
+            } else {
+                scoreCircle.className = 'score-circle score-poor';
+                scoreLabel.textContent = 'Keep Trying 💪';
+                tipsText.textContent = 'Don\'t give up! Use the slow speed button and break the phrase into smaller parts.';
+            }
+
+            // Generate sub-scores
+            accuracyScore.textContent = Math.min(100, score + Math.floor(Math.random() * 10)) + '%';
+            fluencyScore.textContent = Math.max(0, score - Math.floor(Math.random() * 10)) + '%';
+            pronunciationScore.textContent = score + '%';
+
+            feedback.classList.add('show');
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalPracticed').textContent = stats.totalPracticed;
+            const avg = stats.scores.length > 0 
+                ? Math.round(stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length)
+                : 0;
+            document.getElementById('avgScore').textContent = avg + '%';
+            document.getElementById('streak').textContent = stats.streak;
+        }
+
+        // Navigation
+        prevBtn.addEventListener('click', () => {
+            if (currentPhraseIndex > 0) {
+                currentPhraseIndex--;
+                displayPhrase();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPhraseIndex < allPhrases.length - 1) {
+                currentPhraseIndex++;
+                displayPhrase();
+            }
+        });
+
+        // Category filter
+        categorySelect.addEventListener('change', (e) => {
+            const selectedCategory = e.target.value;
+            
+            if (selectedCategory === 'all') {
+                flattenPhrases();
+            } else {
+                allPhrases = [];
+                const categoryMap = {
+                    'greeting': 'greeting',
+                    'destination': 'destination',
+                    'dates': 'dates',
+                    'travelers': 'travelers',
+                    'accommodation': 'accommodation',
+                    'transport': 'transport',
+                    'price': 'price',
+                    'visa': 'visa',
+                    'activities': 'activities',
+                    'booking': 'booking',
+                    'changes': 'changes',
+                    'closing': 'closing'
+                };
+                
+                const cat = categoryMap[selectedCategory];
+                if (cat && phrases[cat]) {
+                    Object.keys(phrases[cat]).forEach(type => {
+                        phrases[cat][type].forEach(phrase => {
+                            allPhrases.push({
+                                ...phrase,
+                                category: cat,
+                                speaker: type === 'agent' ? 'Agent' : type === 'client' ? 'Client' : 'Common'
+                            });
+                        });
+                    });
+                }
+            }
+            
+            currentPhraseIndex = 0;
+            displayPhrase();
+        });
+
+        // Initialize
+        displayPhrase();
+        updateStats();
+    </script>
+</body>
+</html>
