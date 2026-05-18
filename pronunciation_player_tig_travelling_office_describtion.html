@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pronunciation Player — Travel Agency Office</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal-dark:  #00695C;
+    --teal-mid:   #00897B;
+    --teal-rule:  #4DB6AC;
+    --teal-light: #E0F2F1;
+    --teal-pale:  #F0FAFA;
+    --text:       #1A1A1A;
+    --muted:      #607D8B;
+    --border:     #D8E8E6;
+    --bg:         #FFFFFF;
+    --bg2:        #F5FAFA;
+    --amber-bg:   #FFF8E1;
+    --amber-text: #7C5A00;
+    --amber-bdr:  #FFD54F;
+    --radius:     8px;
+    --radius-lg:  12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: var(--bg2);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    border-left: 4px solid var(--teal-mid);
+    padding-left: 16px;
+    margin-bottom: 2rem;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    line-height: 1.3;
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Controls card */
+  .controls {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-label {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 64px;
+  }
+
+  .accent-group { display: flex; gap: 6px; }
+  .acc-btn {
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .acc-btn:hover { border-color: var(--teal-rule); color: var(--teal-dark); }
+  .acc-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-rule); }
+
+  .play-all-btn {
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .play-all-btn:hover { background: var(--teal-light); border-color: var(--teal-rule); color: var(--teal-dark); }
+  .play-all-btn.playing { background: var(--teal-mid); border-color: var(--teal-mid); color: #fff; }
+
+  .stop-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .stop-btn:hover { border-color: #ccc; color: var(--text); }
+
+  .speed-wrap {
+    display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;
+  }
+  input[type=range] {
+    flex: 1;
+    height: 4px;
+    accent-color: var(--teal-mid);
+    cursor: pointer;
+  }
+  .speed-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    min-width: 36px;
+  }
+  .counter {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* Section tabs */
+  .section-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .sec-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .sec-btn:hover { border-color: var(--teal-rule); color: var(--teal-dark); }
+  .sec-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-rule); }
+
+  /* Phrase list */
+  .phrase-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .phrase-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    transition: border-color .15s, background .15s;
+    cursor: default;
+  }
+  .phrase-row:hover { border-color: var(--teal-rule); }
+  .phrase-row.playing {
+    border-color: var(--teal-mid);
+    background: var(--teal-light);
+  }
+
+  .play-btn {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .play-btn:hover { background: var(--teal-light); border-color: var(--teal-rule); }
+  .play-btn svg { width: 13px; height: 13px; fill: var(--muted); }
+  .play-btn:hover svg { fill: var(--teal-dark); }
+  .phrase-row.playing .play-btn { background: var(--teal-mid); border-color: var(--teal-mid); }
+  .phrase-row.playing .play-btn svg { fill: #fff; }
+
+  .phrase-content { flex: 1; min-width: 0; }
+  .phrase-en { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .phrase-ipa { font-size: 12px; color: var(--teal-dark); margin-top: 3px; font-family: "Courier New", monospace; }
+  .phrase-ru { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .diff-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .diff-badge.has-diff {
+    background: var(--amber-bg);
+    color: var(--amber-text);
+    border-color: var(--amber-bdr);
+  }
+
+  /* Diff tooltip area */
+  .diff-note {
+    font-size: 11px;
+    color: var(--amber-text);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  @media (max-width: 520px) {
+    .ctrl-row { flex-direction: column; align-items: flex-start; }
+    .counter { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Pronunciation Player</h1>
+    <p>Describing a travel agency office &nbsp;·&nbsp; A2–B1 &nbsp;·&nbsp; American &amp; British English</p>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-row">
+      <span class="ctrl-label">Accent</span>
+      <div class="accent-group">
+        <button class="acc-btn active" id="btn-us" onclick="setAccent('us')">🇺🇸 American</button>
+        <button class="acc-btn" id="btn-gb" onclick="setAccent('gb')">🇬🇧 British</button>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Speed</span>
+      <div class="speed-wrap">
+        <input type="range" min="0.5" max="1.2" step="0.1" value="0.9" id="speed-slider" oninput="updateSpeed(this.value)">
+        <span class="speed-val" id="speed-val">0.9×</span>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <button class="play-all-btn" id="play-all-btn" onclick="playAll()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><polygon points="3,2 14,8 3,14"/></svg>
+        Play all
+      </button>
+      <button class="stop-btn" onclick="stopAll()">◼ Stop</button>
+      <span class="counter" id="counter"></span>
+    </div>
+  </div>
+
+  <div class="section-tabs" id="sec-tabs"></div>
+  <div class="phrase-list" id="phrase-list"></div>
+
+  <div class="footer">
+    Uses Web Speech API &nbsp;·&nbsp; Works in Chrome, Edge, Safari &nbsp;·&nbsp; Voice quality depends on your OS language packs
+  </div>
+
+</div>
+
+<script>
+const PHRASES = {
+  "Layout & Structure": [
+    { en: "open-plan layout",
+      ru: "открытая планировка",
+      us: "ˈoʊpən plæn ˈleɪaʊt",
+      gb: "ˈəʊpən plæn ˈleɪaʊt",
+      diff: "open: /oʊ/ (US) vs /əʊ/ (GB)" },
+    { en: "reception area / front desk",
+      ru: "зона ресепшн / стойка регистрации",
+      us: "rɪˈsɛpʃən ˈɛriə / frʌnt dɛsk",
+      gb: "rɪˈsɛpʃən ˈɪəriə / frʌnt dɛsk",
+      diff: "area: /ˈɛriə/ (US) vs /ˈɪəriə/ (GB)" },
+    { en: "consultation corner",
+      ru: "зона консультаций",
+      us: "ˌkɑːnsəlˈteɪʃən ˈkɔːrnər",
+      gb: "ˌkɒnsəlˈteɪʃən ˈkɔːnə",
+      diff: "/kɑːn-/ (US) vs /kɒn-/ (GB); r-drop in corner (GB)" },
+    { en: "private meeting room",
+      ru: "отдельный конференц-зал",
+      us: "ˈpraɪvɪt ˈmiːtɪŋ ruːm",
+      gb: "ˈpraɪvɪt ˈmiːtɪŋ ruːm",
+      diff: "" },
+    { en: "booking counter",
+      ru: "стойка для бронирования",
+      us: "ˈbʊkɪŋ ˈkaʊntər",
+      gb: "ˈbʊkɪŋ ˈkaʊntə",
+      diff: "counter: r-drop in GB /ˈkaʊntə/" },
+    { en: "waiting area",
+      ru: "зона ожидания",
+      us: "ˈweɪtɪŋ ˈɛriə",
+      gb: "ˈweɪtɪŋ ˈɪəriə",
+      diff: "area vowel: /ˈɛriə/ (US) vs /ˈɪəriə/ (GB)" },
+  ],
+  "Furniture & Decor": [
+    { en: "ergonomic workstation",
+      ru: "эргономичное рабочее место",
+      us: "ˌɜːrɡəˈnɑːmɪk ˈwɜːrkˌsteɪʃən",
+      gb: "ˌɜːɡəˈnɒmɪk ˈwɜːkˌsteɪʃən",
+      diff: "-nomic: /nɑːm/ (US) vs /nɒm/ (GB); rhotic /r/ in work (US)" },
+    { en: "acoustic panels",
+      ru: "акустические панели",
+      us: "əˈkuːstɪk ˈpænəlz",
+      gb: "əˈkuːstɪk ˈpænəlz",
+      diff: "" },
+    { en: "world maps / map wall",
+      ru: "карты мира / стена с картами",
+      us: "wɜːrld mæps / mæp wɔːl",
+      gb: "wɜːld mæps / mæp wɔːl",
+      diff: "world: rhotic /r/ in US" },
+    { en: "destination posters",
+      ru: "постеры направлений",
+      us: "ˌdɛstɪˈneɪʃən ˈpoʊstərz",
+      gb: "ˌdɛstɪˈneɪʃən ˈpəʊstəz",
+      diff: "poster: /poʊ/ (US) vs /pəʊ/ (GB); r-drop in GB" },
+    { en: "brochure rack",
+      ru: "стойка с брошюрами",
+      us: "broʊˈʃʊr ræk",
+      gb: "ˈbrɒʃə ræk",
+      diff: "brochure: stress on 2nd syllable (US), 1st (GB); /broʊˈʃʊr/ vs /ˈbrɒʃə/" },
+    { en: "potted plants",
+      ru: "комнатные растения",
+      us: "ˈpɑːtɪd plænts",
+      gb: "ˈpɒtɪd plɑːnts",
+      diff: "potted: /pɑː/ (US) vs /pɒ/ (GB); plants: /plænts/ (US) vs /plɑːnts/ (GB)" },
+  ],
+  "Technology": [
+    { en: "dual-monitor setup",
+      ru: "двухмониторная система",
+      us: "ˈduːəl ˈmɒnɪtər ˈsɛtʌp",
+      gb: "ˈdjuːəl ˈmɒnɪtə ˈsɛtʌp",
+      diff: "dual: /ˈduː-/ (US) vs /ˈdjuː-/ (GB)" },
+    { en: "booking software / reservation system",
+      ru: "программа бронирования",
+      us: "ˈbʊkɪŋ ˈsɔːftwɛr / ˌrɛzərˈveɪʃən ˈsɪstəm",
+      gb: "ˈbʊkɪŋ ˈsɒftwɛː / ˌrɛzəˈveɪʃən ˈsɪstəm",
+      diff: "software: /ˈsɔːf-/ (US) vs /ˈsɒf-/ (GB)" },
+    { en: "interactive digital screen",
+      ru: "интерактивный цифровой экран",
+      us: "ˌɪntərˈæktɪv ˈdɪdʒɪtəl skriːn",
+      gb: "ˌɪntərˈæktɪv ˈdɪdʒɪtl skriːn",
+      diff: "digital: 4 syllables (US) vs 3 syllables (GB)" },
+    { en: "smart TV",
+      ru: "смарт-телевизор",
+      us: "smɑːrt ˌtiːˈviː",
+      gb: "smɑːt ˌtiːˈviː",
+      diff: "smart: rhotic /r/ in US" },
+  ],
+  "Atmosphere": [
+    { en: "natural light",
+      ru: "естественный свет",
+      us: "ˈnætʃərəl laɪt",
+      gb: "ˈnætʃrəl laɪt",
+      diff: "natural: 3 syllables /næ-tʃər-əl/ (US) vs 2 /ˈnætʃrəl/ (GB)" },
+    { en: "ambient lighting",
+      ru: "мягкое / рассеянное освещение",
+      us: "ˈæmbiənt ˈlaɪtɪŋ",
+      gb: "ˈæmbiənt ˈlaɪtɪŋ",
+      diff: "" },
+    { en: "client-focused design",
+      ru: "дизайн, ориентированный на клиента",
+      us: "ˈklaɪənt ˈfoʊkəst dɪˈzaɪn",
+      gb: "ˈklaɪənt ˈfəʊkəst dɪˈzaɪn",
+      diff: "focused: /foʊ-/ (US) vs /fəʊ-/ (GB)" },
+    { en: "floor-to-ceiling windows",
+      ru: "панорамные окна",
+      us: "flɔːr tə ˈsiːlɪŋ ˈwɪndoʊz",
+      gb: "flɔː tə ˈsiːlɪŋ ˈwɪndəʊz",
+      diff: "floor: rhotic (US); window: /wɪndoʊ/ (US) vs /wɪndəʊ/ (GB)" },
+  ],
+  "Example sentences": [
+    { en: "The office features an open-plan layout that promotes collaboration.",
+      ru: "",
+      us: "ðə ˈɔːfɪs ˈfiːtʃərz ən ˈoʊpən plæn ˈleɪaʊt",
+      gb: "ðə ˈɒfɪs ˈfiːtʃəz ən ˈəʊpən plæn ˈleɪaʊt",
+      diff: "office: /ˈɔːf-/ (US) vs /ˈɒf-/ (GB); open vowel; r-drop in features (GB)" },
+    { en: "A sleek reception area welcomes visitors with travel brochures.",
+      ru: "",
+      us: "ə sliːk rɪˈsɛpʃən ˈɛriə ˈwɛlkəmz ˈvɪzɪtərz wɪð ˈtrævəl broʊˈʃʊrz",
+      gb: "ə sliːk rɪˈsɛpʃən ˈɪəriə ˈwɛlkəmz ˈvɪzɪtəz wɪð ˈtrævl ˈbrɒʃəz",
+      diff: "area, visitors, brochures all show US/GB differences" },
+    { en: "Consultants work with a dual-monitor setup for efficient booking.",
+      ru: "",
+      us: "kənˈsʌltənts wɜːrk wɪð ə ˈduːəl ˈmɒnɪtər ˈsɛtʌp fər ɪˈfɪʃənt ˈbʊkɪŋ",
+      gb: "kənˈsʌltənts wɜːk wɪð ə ˈdjuːəl ˈmɒnɪtə ˈsɛtʌp fər ɪˈfɪʃənt ˈbʊkɪŋ",
+      diff: "dual, work (rhotic), monitor — see individual entries" },
+    { en: "Natural light floods the office through floor-to-ceiling windows.",
+      ru: "",
+      us: "ˈnætʃərəl laɪt flʌdz ðə ˈɔːfɪs θruː flɔːr tə ˈsiːlɪŋ ˈwɪndoʊz",
+      gb: "ˈnætʃrəl laɪt flʌdz ðə ˈɒfɪs θruː flɔː tə ˈsiːlɪŋ ˈwɪndəʊz",
+      diff: "natural (syllables), office, floor, windows — multiple differences" },
+    { en: "The client-focused design exudes professionalism and passion for travel.",
+      ru: "",
+      us: "ðə ˈklaɪənt ˈfoʊkəst dɪˈzaɪn ɪɡˈzuːdz prəˈfɛʃənəlɪzəm ænd ˈpæʃən fər ˈtrævəl",
+      gb: "ðə ˈklaɪənt ˈfəʊkəst dɪˈzaɪn ɪɡˈzjuːdz prəˈfɛʃənəlɪzəm ənd ˈpæʃən fə ˈtrævl",
+      diff: "focused, exudes /zjuː/ (GB); travel: r-drop + syllable reduction" },
+    { en: "The private meeting room is equipped for group bookings and presentations.",
+      ru: "",
+      us: "ðə ˈpraɪvɪt ˈmiːtɪŋ ruːm ɪz ɪˈkwɪpt fər ɡruːp ˈbʊkɪŋz ænd ˌprɛzənˈteɪʃənz",
+      gb: "ðə ˈpraɪvɪt ˈmiːtɪŋ ruːm ɪz ɪˈkwɪpt fə ɡruːp ˈbʊkɪŋz ənd ˌprɛzənˈteɪʃənz",
+      diff: "for /fər/ (US) vs /fə/ (GB); and /ænd/ (US) vs /ənd/ (GB)" },
+  ]
+};
+
+let accent = 'us';
+let currentSection = Object.keys(PHRASES)[0];
+let rate = 0.9;
+const synth = window.speechSynthesis;
+let currentIdx = -1;
+let autoPlaying = false;
+
+function setAccent(a) {
+  accent = a;
+  document.getElementById('btn-us').classList.toggle('active', a === 'us');
+  document.getElementById('btn-gb').classList.toggle('active', a === 'gb');
+  renderPhrases();
+}
+
+function updateSpeed(v) {
+  rate = parseFloat(v);
+  document.getElementById('speed-val').textContent = parseFloat(v).toFixed(1) + '×';
+}
+
+function buildTabs() {
+  const cont = document.getElementById('sec-tabs');
+  cont.innerHTML = '';
+  Object.keys(PHRASES).forEach(sec => {
+    const b = document.createElement('button');
+    b.className = 'sec-btn' + (sec === currentSection ? ' active' : '');
+    b.textContent = sec;
+    b.onclick = () => {
+      currentSection = sec;
+      stopAll();
+      buildTabs();
+      renderPhrases();
+    };
+    cont.appendChild(b);
+  });
+}
+
+function renderPhrases() {
+  const list = document.getElementById('phrase-list');
+  list.innerHTML = '';
+  PHRASES[currentSection].forEach((p, i) => {
+    const ipa = accent === 'us' ? p.us : p.gb;
+    const hasDiff = p.diff && p.diff.length > 0;
+    const row = document.createElement('div');
+    row.className = 'phrase-row';
+    row.id = 'row-' + i;
+    row.innerHTML = `
+      <button class="play-btn" onclick="speakOne(${i})" title="Play">
+        <svg viewBox="0 0 16 16"><polygon points="3,2 14,8 3,14"/></svg>
+      </button>
+      <div class="phrase-content">
+        <div class="phrase-en">${p.en}</div>
+        <div class="phrase-ipa">/${ipa}/</div>
+        ${p.ru ? `<div class="phrase-ru">${p.ru}</div>` : ''}
+        ${hasDiff ? `<div class="diff-note">⚡ ${p.diff}</div>` : ''}
+      </div>
+      <div class="diff-badge ${hasDiff ? 'has-diff' : ''}">${hasDiff ? '⚡ differs' : 'same'}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function getLang()  { return accent === 'us' ? 'en-US' : 'en-GB'; }
+
+function getVoice() {
+  const voices = synth.getVoices();
+  const lang = getLang();
+  return voices.find(v => v.lang === lang && v.localService)
+      || voices.find(v => v.lang === lang)
+      || voices.find(v => v.lang.startsWith(accent === 'us' ? 'en-US' : 'en-GB'))
+      || voices.find(v => v.lang.startsWith('en'))
+      || null;
+}
+
+function utter(text, onEnd) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = getLang();
+  u.rate = rate;
+  const v = getVoice();
+  if (v) u.voice = v;
+  u.onend = onEnd;
+  u.onerror = onEnd;
+  synth.speak(u);
+  return u;
+}
+
+function highlight(idx) {
+  document.querySelectorAll('.phrase-row').forEach(r => r.classList.remove('playing'));
+  const r = document.getElementById('row-' + idx);
+  if (r) { r.classList.add('playing'); r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function clearHighlight() {
+  document.querySelectorAll('.phrase-row').forEach(r => r.classList.remove('playing'));
+}
+
+function speakOne(idx) {
+  stopAll();
+  const items = PHRASES[currentSection];
+  if (!items[idx]) return;
+  highlight(idx);
+  utter(items[idx].en, () => { clearHighlight(); });
+}
+
+function playAll() {
+  stopAll();
+  autoPlaying = true;
+  document.getElementById('play-all-btn').classList.add('playing');
+  const items = PHRASES[currentSection];
+  let idx = 0;
+  const next = () => {
+    if (!autoPlaying || idx >= items.length) {
+      clearHighlight();
+      document.getElementById('counter').textContent = '';
+      document.getElementById('play-all-btn').classList.remove('playing');
+      autoPlaying = false;
+      return;
+    }
+    document.getElementById('counter').textContent = (idx + 1) + ' / ' + items.length;
+    highlight(idx);
+    utter(items[idx].en, () => {
+      clearHighlight();
+      idx++;
+      if (autoPlaying) setTimeout(next, 500);
+    });
+  };
+  next();
+}
+
+function stopAll() {
+  autoPlaying = false;
+  synth.cancel();
+  clearHighlight();
+  document.getElementById('counter').textContent = '';
+  document.getElementById('play-all-btn').classList.remove('playing');
+}
+
+if (typeof synth.onvoiceschanged !== 'undefined') {
+  synth.onvoiceschanged = () => {};
+}
+
+buildTabs();
+renderPhrases();
+</script>
+</body>
+</html>

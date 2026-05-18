@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airport English Vocabulary Test — B2/C1</title>
+<style>
+  :root {
+    --blue: #185FA5; --blue-light: #E6F1FB; --blue-mid: #378ADD;
+    --green: #3B6D11; --green-light: #EAF3DE;
+    --red: #A32D2D; --red-light: #FCEBEB;
+    --amber: #854F0B; --amber-light: #FAEEDA;
+    --purple: #534AB7; --purple-light: #EEEDFE;
+    --gray: #5F5E5A; --gray-light: #F1EFE8;
+    --text: #1a1a18; --text-muted: #666; --border: #e0e0dc;
+    --bg: #f9f9f7; --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* SCREENS */
+  .screen { display: none; max-width: 760px; margin: 0 auto; padding: 2rem 1rem; }
+  .screen.active { display: block; }
+
+  /* START SCREEN */
+  .start-hero { text-align: center; padding: 3rem 1rem 2rem; }
+  .start-hero .plane { font-size: 48px; margin-bottom: 1rem; }
+  .start-hero h1 { font-size: 26px; font-weight: 500; margin-bottom: 0.5rem; }
+  .start-hero .tagline { font-size: 15px; color: var(--text-muted); margin-bottom: 2rem; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .info-card { background: var(--white); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .info-card .num { font-size: 24px; font-weight: 500; color: var(--blue); }
+  .info-card .lbl { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .section-list { background: var(--white); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 2rem; text-align: left; }
+  .section-list h3 { font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .section-list ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .section-list li { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .section-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue-mid); flex-shrink: 0; }
+  .btn-primary { display: block; width: 100%; max-width: 320px; margin: 0 auto; background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 14px; font-size: 16px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.85; }
+
+  /* QUIZ SCREEN */
+  .quiz-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .progress-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 3px; margin: 0 1rem; }
+  .progress-bar { height: 100%; background: var(--blue-mid); border-radius: 3px; transition: width 0.3s ease; }
+  .q-counter { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue); margin-bottom: 1rem; letter-spacing: 0.03em; text-transform: uppercase; }
+  .question-card { background: var(--white); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .q-type { font-size: 11px; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .q-text { font-size: 16px; line-height: 1.6; margin-bottom: 1.25rem; }
+  .q-text strong { font-weight: 500; border-bottom: 2px solid var(--blue-mid); }
+  .blank { display: inline-block; min-width: 80px; border-bottom: 2px solid var(--blue-mid); color: transparent; user-select: none; }
+
+  /* MCQ */
+  .options { display: grid; gap: 8px; }
+  .option { display: flex; align-items: flex-start; gap: 10px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer; transition: all 0.12s; font-size: 14px; text-align: left; width: 100%; }
+  .option:hover:not(:disabled) { border-color: var(--blue-mid); background: var(--blue-light); }
+  .option.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+  .option.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .option.incorrect { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .option.reveal-correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .option:disabled { cursor: default; }
+  .opt-letter { font-size: 12px; font-weight: 500; width: 20px; flex-shrink: 0; margin-top: 1px; }
+
+  /* GAP FILL */
+  .gap-input { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.12s; }
+  .gap-input:focus { border-color: var(--blue-mid); }
+  .gap-input.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .gap-input.incorrect { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+  /* MATCHING */
+  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .match-item { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; transition: all 0.12s; text-align: center; }
+  .match-item:hover { border-color: var(--blue-mid); }
+  .match-item.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+  .match-item.matched-ok { border-color: var(--green); background: var(--green-light); color: var(--green); cursor: default; }
+  .match-item.matched-fail { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .match-divider { grid-column: 1 / -1; height: 0.5px; background: var(--border); margin: 4px 0; }
+  .match-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+
+  /* FEEDBACK */
+  .feedback { margin-top: 0.75rem; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--green-light); color: var(--green); }
+  .feedback.fail { background: var(--red-light); color: var(--red); }
+
+  /* NAV */
+  .q-nav { display: flex; justify-content: flex-end; margin-top: 1rem; }
+  .btn-next { background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer; display: none; }
+  .btn-next.show { display: inline-block; }
+  .btn-next:hover { opacity: 0.85; }
+
+  /* RESULTS SCREEN */
+  .result-hero { text-align: center; padding: 2rem 0 1.5rem; }
+  .score-ring { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 4px solid var(--blue); }
+  .score-pct { font-size: 32px; font-weight: 500; color: var(--blue); }
+  .score-lbl { font-size: 12px; color: var(--text-muted); }
+  .result-title { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; }
+  .result-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 2rem; }
+  .breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .bk-card { background: var(--white); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .bk-card .bk-n { font-size: 22px; font-weight: 500; }
+  .bk-card .bk-l { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .bk-card.good .bk-n { color: var(--green); }
+  .bk-card.mid .bk-n { color: var(--amber); }
+  .bk-card.low .bk-n { color: var(--red); }
+  .review-list { background: var(--white); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
+  .review-list h3 { font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .review-item { padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+  .review-item:last-child { border-bottom: none; }
+  .review-item .ri-q { color: var(--text-muted); margin-bottom: 3px; }
+  .review-item .ri-a { display: flex; gap: 8px; }
+  .ri-wrong { color: var(--red); text-decoration: line-through; }
+  .ri-right { color: var(--green); }
+  .btn-restart { display: block; width: 100%; max-width: 320px; margin: 0 auto; background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 14px; font-size: 16px; font-weight: 500; cursor: pointer; }
+  .btn-restart:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div class="screen active" id="screen-start">
+  <div class="start-hero">
+    <div class="plane">✈</div>
+    <h1>Airport English Vocabulary Test</h1>
+    <p class="tagline">Levels B2 – C1 &nbsp;·&nbsp; Tourism & Travel English</p>
+  </div>
+  <div class="info-grid">
+    <div class="info-card"><div class="num">50</div><div class="lbl">Questions</div></div>
+    <div class="info-card"><div class="num">5</div><div class="lbl">Question types</div></div>
+    <div class="info-card"><div class="num">B2–C1</div><div class="lbl">CEFR level</div></div>
+    <div class="info-card"><div class="num">~25 min</div><div class="lbl">Estimated time</div></div>
+  </div>
+  <div class="section-list">
+    <h3>Topics covered</h3>
+    <ul>
+      <li>Check-in & passenger services</li>
+      <li>Security & screening</li>
+      <li>Departures & connections</li>
+      <li>On board the aircraft</li>
+      <li>Arrivals & baggage</li>
+      <li>Disruption & passenger rights</li>
+      <li>Airport operations (C1)</li>
+      <li>Customs & border control (C1)</li>
+      <li>Collocations & word formation</li>
+      <li>Formal register & phrases</li>
+    </ul>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Start Test →</button>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <span class="q-counter" id="q-counter">1 / 50</span>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:2%"></div></div>
+    <span id="score-live" style="font-size:13px;color:var(--text-muted);">0 pts</span>
+  </div>
+  <div id="question-area"></div>
+  <div class="q-nav"><button class="btn-next" id="btn-next" onclick="nextQuestion()">Next →</button></div>
+</div>
+
+<!-- RESULTS SCREEN -->
+<div class="screen" id="screen-results">
+  <div class="result-hero">
+    <div class="score-ring"><span class="score-pct" id="res-pct">0%</span><span class="score-lbl">score</span></div>
+    <h2 class="result-title" id="res-title">Well done!</h2>
+    <p class="result-sub" id="res-sub"></p>
+  </div>
+  <div class="breakdown" id="breakdown"></div>
+  <div class="review-list" id="review-list"><h3>Review incorrect answers</h3><div id="review-items"></div></div>
+  <button class="btn-restart" onclick="restartQuiz()">Try Again ↺</button>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── SECTION 1: CHECK-IN & PASSENGER SERVICES ──
+  {section:"Check-in & passenger services", type:"mcq",
+   q:"A passenger who has accumulated points through their airline's loyalty scheme is known as a ___.",
+   options:["regular traveller","frequent flyer","priority boarder","loyalty member"], answer:1,
+   exp:"A <strong>frequent flyer</strong> is a passenger enrolled in an airline's loyalty programme, earning miles or points for each flight."},
+
+  {section:"Check-in & passenger services", type:"mcq",
+   q:"When all seats on a flight have been sold but the airline has issued more tickets than available seats, the flight is said to be ___.",
+   options:["fully booked","overloaded","overbooked","sold out"], answer:2,
+   exp:"<strong>Overbooked</strong> means more tickets were sold than there are seats — a common airline practice to maximise revenue."},
+
+  {section:"Check-in & passenger services", type:"gap",
+   q:"Passengers who have been involuntarily removed from a flight due to overbooking are said to have been ___ off the flight.",
+   answer:"bumped", alts:["bumped off"],
+   exp:"To be <strong>bumped</strong> (off a flight) means to be denied boarding, usually due to overbooking, often with compensation offered."},
+
+  {section:"Check-in & passenger services", type:"mcq",
+   q:"Which phrase correctly completes this sentence? 'I used my air miles to ___ a business class upgrade.'",
+   options:["redeem","collect","earn","purchase"], answer:0,
+   exp:"You <strong>redeem</strong> air miles or reward points — exchange them for a benefit. You <em>earn</em> or <em>collect</em> them over time."},
+
+  {section:"Check-in & passenger services", type:"mcq",
+   q:"A passenger's seat assignment is referred to as their ___.",
+   options:["booked position","allocated seat","reserved place","ticketed row"], answer:1,
+   exp:"<strong>Allocated seat</strong> is the standard term for a pre-assigned seat on a flight."},
+
+  {section:"Check-in & passenger services", type:"gap",
+   q:"After printing her boarding pass at the kiosk, Sarah went to the ___ counter to leave her suitcase.",
+   answer:"drop-off", alts:["bag drop","baggage drop"],
+   exp:"A <strong>bag drop</strong> or <strong>drop-off</strong> counter is where passengers hand over checked luggage after completing check-in."},
+
+  {section:"Check-in & passenger services", type:"mcq",
+   q:"'Could I be ___ to business class if there are available seats?' — which word completes this request?",
+   options:["promoted","upgraded","transferred","advanced"], answer:1,
+   exp:"<strong>Upgraded</strong> is the standard term for moving to a higher class of service (e.g. economy → business)."},
+
+  // ── SECTION 2: SECURITY & SCREENING ──
+  {section:"Security & screening", type:"mcq",
+   q:"The process by which passengers' carry-on bags are examined by X-ray is called ___.",
+   options:["vetting","clearance","screening","profiling"], answer:2,
+   exp:"<strong>Screening</strong> refers to the security process of examining passengers and their baggage, typically via X-ray and body scanners."},
+
+  {section:"Security & screening", type:"gap",
+   q:"Passengers are required to place liquids exceeding 100ml in a ___ zip-lock bag for security screening.",
+   answer:"transparent", alts:["clear","see-through"],
+   exp:"The rule requires a <strong>transparent</strong> (see-through) resealable plastic bag so that security officers can inspect the contents without opening it."},
+
+  {section:"Security & screening", type:"mcq",
+   q:"An officer pulled the traveller aside for a more thorough inspection — this is known as ___.",
+   options:["random profiling","secondary screening","advanced checking","extended clearance"], answer:1,
+   exp:"<strong>Secondary screening</strong> is an additional, more detailed security inspection conducted on selected passengers."},
+
+  {section:"Security & screening", type:"mcq",
+   q:"Which verb is used when security officers take away an item that is not permitted in the cabin?",
+   options:["remove","ban","confiscate","restrict"], answer:2,
+   exp:"To <strong>confiscate</strong> means to officially take away an item — in this context, prohibited items found during screening."},
+
+  {section:"Security & screening", type:"gap",
+   q:"My metal watch ___ the alarm at the security gate, so I had to remove it and try again.",
+   answer:"set off", alts:["triggered","activated"],
+   exp:"To <strong>set off</strong> the alarm means to trigger or activate it — a common phrasal verb in security contexts."},
+
+  {section:"Security & screening", type:"mcq",
+   q:"Select the correct collocation: passengers must ___ their laptops from their bags before screening.",
+   options:["take away","remove","extract","pull out"], answer:1,
+   exp:"<strong>Remove</strong> is the standard, formal verb used in security instructions: 'Please remove your laptop from its bag.'"},
+
+  // ── SECTION 3: DEPARTURES & CONNECTIONS ──
+  {section:"Departures & connections", type:"mcq",
+   q:"A passenger who remains airside during a stop at an intermediate airport without entering the country is called a ___ passenger.",
+   options:["layover","transfer","transit","connecting"], answer:2,
+   exp:"A <strong>transit</strong> passenger passes through an airport without officially entering the country, staying in the international (airside) zone."},
+
+  {section:"Departures & connections", type:"gap",
+   q:"Due to the four-hour delay, we were given meal vouchers and rebooked on the next available flight — the airline ___ us at no extra cost.",
+   answer:"rebooked", alts:["rescheduled","re-routed"],
+   exp:"To <strong>rebook</strong> means to make a new reservation for a passenger on an alternative flight after a cancellation or significant delay."},
+
+  {section:"Departures & connections", type:"mcq",
+   q:"The departure lounge display showed the flight status as 'Gate change: B7 → A22'. What should passengers do?",
+   options:["Go to gate B7 immediately","Wait for a further announcement","Proceed to gate A22","Check in again"], answer:2,
+   exp:"A <strong>gate change</strong> means the departure gate has been moved — passengers must proceed to the new gate (A22) as quickly as possible."},
+
+  {section:"Departures & connections", type:"mcq",
+   q:"An intermediate stop made by a passenger between their departure and final destination is called a ___.",
+   options:["transit point","stopover","break","relay"], answer:1,
+   exp:"A <strong>stopover</strong> is a stay at an intermediate airport, often overnight. A short connection (under a few hours) is usually called a layover."},
+
+  {section:"Departures & connections", type:"gap",
+   q:"With only 45 minutes between flights, the passenger was worried about making her ___.",
+   answer:"connection", alts:["connecting flight"],
+   exp:"In aviation, a <strong>connection</strong> or <strong>connecting flight</strong> is the second (or subsequent) flight in a journey with a layover between segments."},
+
+  {section:"Departures & connections", type:"mcq",
+   q:"'This is the ___ boarding call for passengers travelling to Vienna on flight OS445.' Which word is missing?",
+   options:["last","final","closing","ultimate"], answer:1,
+   exp:"<strong>Final</strong> boarding call is the standard phrase used in airport announcements — not 'last', which is informal in this context."},
+
+  // ── SECTION 4: ON BOARD ──
+  {section:"On board the aircraft", type:"mcq",
+   q:"Unexpected and irregular air movement causing the aircraft to shake is called ___.",
+   options:["air resistance","turbulence","cabin pressure","windshear"], answer:1,
+   exp:"<strong>Turbulence</strong> is the irregular atmospheric movement that causes an aircraft to shake. Passengers are asked to fasten seatbelts during turbulence."},
+
+  {section:"On board the aircraft", type:"gap",
+   q:"Please ensure your hand luggage is ___ in the overhead bin or under the seat in front of you.",
+   answer:"stowed", alts:["stored","placed"],
+   exp:"To <strong>stow</strong> luggage means to store it safely in an approved location. 'Stow your bag in the overhead locker' is standard cabin crew language."},
+
+  {section:"On board the aircraft", type:"mcq",
+   q:"Seats located at emergency exits typically offer more ___ than standard economy seats.",
+   options:["recline","overhead storage","legroom","aisle access"], answer:2,
+   exp:"<strong>Legroom</strong> refers to the space in front of a seat for the passenger's legs. Exit row seats generally have significantly more legroom."},
+
+  {section:"On board the aircraft", type:"mcq",
+   q:"Before take-off, flight attendants perform a ___ explaining emergency exits and safety equipment.",
+   options:["security check","safety demonstration","compliance briefing","pre-flight summary"], answer:1,
+   exp:"A <strong>safety demonstration</strong> (also called a safety briefing) is the mandatory pre-flight procedure where cabin crew demonstrate emergency procedures."},
+
+  {section:"On board the aircraft", type:"gap",
+   q:"The captain has switched on the fasten seatbelt sign. Please return your ___ table to its upright position.",
+   answer:"tray", alts:["tray table"],
+   exp:"A <strong>tray table</strong> is the fold-down surface attached to the seat in front, used for meals and writing. It must be stowed for take-off and landing."},
+
+  // ── SECTION 5: ARRIVALS & BAGGAGE ──
+  {section:"Arrivals & baggage", type:"mcq",
+   q:"Non-EU passport holders arriving at a European airport must queue at the ___ desk.",
+   options:["passport control","arrivals","customs","immigration"], answer:3,
+   exp:"<strong>Immigration</strong> (or border control) is the official process of checking passports and visas for travellers entering a country."},
+
+  {section:"Arrivals & baggage", type:"gap",
+   q:"Passengers with nothing to declare should use the ___ channel when passing through customs.",
+   answer:"green", alts:["nothing-to-declare"],
+   exp:"The <strong>green channel</strong> in customs is designated for passengers with nothing to declare (goods within duty-free allowances)."},
+
+  {section:"Arrivals & baggage", type:"mcq",
+   q:"If a passenger's bag arrives damaged, they should complete a ___ at the baggage services desk.",
+   options:["baggage form","PIR","damage claim","incident report"], answer:1,
+   exp:"A <strong>PIR (Property Irregularity Report)</strong> is the official form completed at the airport when luggage is lost, delayed or damaged."},
+
+  {section:"Arrivals & baggage", type:"mcq",
+   q:"Which phrase correctly describes the duty-free allowance for incoming passengers?",
+   options:["The maximum value of goods bought in duty-free shops","The customs threshold up to which no duty is payable","The total weight allowed for checked baggage","The number of items permitted in hand luggage"], answer:1,
+   exp:"The <strong>duty-free allowance</strong> (or customs threshold) is the value or quantity of goods a traveller may import without paying import duty or tax."},
+
+  {section:"Arrivals & baggage", type:"gap",
+   q:"Travellers carrying more than €10,000 in cash are legally required to ___ it to customs authorities.",
+   answer:"declare", alts:["report","disclose"],
+   exp:"To <strong>declare</strong> means to officially inform customs of goods, cash, or items that exceed the permitted allowance."},
+
+  // ── SECTION 6: DISRUPTION & PASSENGER RIGHTS ──
+  {section:"Disruption & passenger rights", type:"mcq",
+   q:"Under EU Regulation 261/2004, what is the maximum compensation a passenger can claim for a long-haul flight cancellation?",
+   options:["€150","€250","€400","€600"], answer:3,
+   exp:"Under <strong>EU 261/2004</strong>, passengers on flights over 3,500km can claim up to <strong>€600</strong> compensation for cancellations or delays of 3+ hours."},
+
+  {section:"Disruption & passenger rights", type:"gap",
+   q:"The airline refused to pay compensation, claiming the storm was a case of ___ ___.",
+   answer:"force majeure", alts:["extraordinary circumstances"],
+   exp:"<strong>Force majeure</strong> (or 'extraordinary circumstances') refers to events beyond the airline's control — natural disasters, political unrest, severe weather — which exempt the airline from compensation liability."},
+
+  {section:"Disruption & passenger rights", type:"mcq",
+   q:"The airline's ___ of care includes providing meals, refreshments and accommodation during significant delays.",
+   options:["standard","obligation","duty","responsibility"], answer:2,
+   exp:"<strong>Duty of care</strong> is the legal term for the airline's obligation to look after passengers during extended delays or cancellations."},
+
+  {section:"Disruption & passenger rights", type:"mcq",
+   q:"A passenger who was moved from business class to economy class without consent has been ___.",
+   options:["downgraded","demoted","transferred","relocated"], answer:0,
+   exp:"<strong>Downgrading</strong> refers to the involuntary movement of a passenger to a lower class of service. Airlines must refund the price difference."},
+
+  {section:"Disruption & passenger rights", type:"gap",
+   q:"The passenger decided to formally ___ a complaint with the airline's customer relations department.",
+   answer:"lodge", alts:["file","submit"],
+   exp:"To <strong>lodge</strong> (or <strong>file/submit</strong>) a complaint is the formal language for submitting an official grievance — far more appropriate than 'make' in formal written contexts."},
+
+  {section:"Disruption & passenger rights", type:"mcq",
+   q:"A flight that lands at an airport other than its scheduled destination due to an emergency is called a ___ landing.",
+   options:["emergency","forced","diversionary","technical"], answer:2,
+   exp:"A <strong>diversionary landing</strong> is when an aircraft lands at an unplanned airport due to an emergency, weather, or other serious reason."},
+
+  {section:"Disruption & passenger rights", type:"mcq",
+   q:"Which sentence correctly invokes EU passenger rights?",
+   options:["'I want money for my late flight.'","'I am entitled to compensation under EU Regulation 261/2004.'","'Your delay was not acceptable and I need refunding.'","'The law says you have to pay me.'"], answer:1,
+   exp:"<strong>'I am entitled to compensation under EU Regulation 261/2004'</strong> is the correct formal register — precise, legal, and professional."},
+
+  // ── SECTION 7: AIRPORT OPERATIONS (C1) ──
+  {section:"Airport operations (C1)", type:"mcq",
+   q:"The time allocated by air traffic control for an aircraft to depart is known as its departure ___.",
+   options:["window","clearance","slot","permit"], answer:2,
+   exp:"A <strong>slot</strong> (or slot time) is the specific time allocated by ATC for a flight to take off. Missing a slot can result in significant delays."},
+
+  {section:"Airport operations (C1)", type:"gap",
+   q:"The process of pushing an aircraft backwards away from the gate before taxiing to the runway is called ___.",
+   answer:"pushback", alts:["push-back"],
+   exp:"<strong>Pushback</strong> is the procedure where a tug vehicle pushes the aircraft backwards from the gate, as aircraft engines cannot safely operate in reverse."},
+
+  {section:"Airport operations (C1)", type:"mcq",
+   q:"An aircraft that has developed a mechanical fault and cannot fly is described as ___.",
+   options:["grounded","AOG","out of service","technical"], answer:1,
+   exp:"<strong>AOG</strong> (Aircraft on Ground) is the aviation industry term for an aircraft that cannot fly due to a technical problem — causing significant schedule disruption."},
+
+  {section:"Airport operations (C1)", type:"mcq",
+   q:"The covered walkway connecting a terminal gate directly to the aircraft door is called a ___.",
+   options:["boarding bridge","terminal arm","air bridge","jetway"], answer:2,
+   exp:"<strong>Air bridge</strong> (also called a <em>jetway</em> or <em>loading bridge</em>) is the enclosed walkway that extends from the terminal to the aircraft door."},
+
+  {section:"Airport operations (C1)", type:"gap",
+   q:"The airline aims for a 40-minute ___ between flights — the time needed to clean, refuel and re-board the aircraft.",
+   answer:"turnaround", alts:["turn-around"],
+   exp:"<strong>Turnaround</strong> (or aircraft turnaround) refers to the total time required to prepare an aircraft for its next flight after landing."},
+
+  {section:"Airport operations (C1)", type:"mcq",
+   q:"A flight operated jointly by two airlines under both their flight numbers is called a ___ flight.",
+   options:["shared","collaborative","code-share","joint-venture"], answer:2,
+   exp:"A <strong>code-share</strong> flight is marketed and sold by two airlines under different flight numbers, but operated by only one of them."},
+
+  // ── SECTION 8: CUSTOMS & BORDER CONTROL (C1) ──
+  {section:"Customs & border control (C1)", type:"mcq",
+   q:"A passport containing a chip storing biometric data such as a facial image and fingerprints is called a ___ passport.",
+   options:["digital","smart","biometric","chip-enabled"], answer:2,
+   exp:"A <strong>biometric passport</strong> (also called an e-passport) contains an electronic chip storing the holder's biometric data, enabling automated border checks via eGates."},
+
+  {section:"Customs & border control (C1)", type:"gap",
+   q:"Travellers with eligible passports can use the automated ___ lanes to clear border control without speaking to an officer.",
+   answer:"eGate", alts:["eGates","e-gate","e-gates","ABC","automated border control"],
+   exp:"<strong>eGates</strong> (automated border control gates) use facial recognition and passport chip data to verify travellers' identity without manual passport checks."},
+
+  {section:"Customs & border control (C1)", type:"mcq",
+   q:"Officers at the border confiscated goods the passenger had not declared. The items were classified as ___.",
+   options:["restricted goods","taxable items","contraband","undeclared assets"], answer:2,
+   exp:"<strong>Contraband</strong> refers to goods that are illegal or prohibited — or in customs contexts, goods brought in without proper declaration or payment of duty."},
+
+  {section:"Customs & border control (C1)", type:"mcq",
+   q:"A traveller flagged on a government security database who cannot board any commercial flight is on the ___.",
+   options:["security register","restricted list","no-fly list","watch register"], answer:2,
+   exp:"The <strong>no-fly list</strong> is an official government security database of individuals barred from boarding commercial aircraft."},
+
+  // ── SECTION 9: COLLOCATIONS & WORD FORMATION ──
+  {section:"Collocations & word formation", type:"mcq",
+   q:"Choose the correct verb: 'Passengers ___ their passenger rights and demanded hotel accommodation.'",
+   options:["used","invoked","applied","demanded"], answer:1,
+   exp:"To <strong>invoke</strong> (rights/regulations) means to cite or appeal to a law or entitlement as justification — formal legal register."},
+
+  {section:"Collocations & word formation", type:"gap",
+   q:"In aviation, ATC stands for Air Traffic ___.",
+   answer:"Control", alts:["control"],
+   exp:"<strong>Air Traffic Control (ATC)</strong> is the service that manages the safe movement of aircraft in the air and on the ground at airports."},
+
+  {section:"Collocations & word formation", type:"mcq",
+   q:"Which adjective correctly completes the phrase? '___ circumstances prevented the airline from paying compensation.'",
+   options:["Unusual","Special","Extraordinary","Unexpected"], answer:2,
+   exp:"<strong>Extraordinary circumstances</strong> is the specific legal term in EU 261/2004 — using any other word changes the meaning in a legal context."},
+
+  {section:"Collocations & word formation", type:"mcq",
+   q:"Select the most precise formal verb: 'Customs officers ___ undeclared alcohol worth £2,000.'",
+   options:["took","removed","seized","confiscated"], answer:2,
+   exp:"<strong>Seized</strong> is the standard legal/law-enforcement term for official appropriation of goods. <em>Confiscate</em> is also correct but <em>seize</em> is preferred in legal and news contexts."},
+
+  {section:"Collocations & word formation", type:"mcq",
+   q:"'The flight was ___ to bad weather at the destination airport.' Which preposition completes this formal announcement?",
+   options:["because of","due to","subject to","owing to"], answer:2,
+   exp:"In formal aviation announcements, <strong>'subject to'</strong> is the standard phrase: 'The delay is subject to [cause].' <em>Due to</em> and <em>owing to</em> are also grammatically correct but less idiomatic in this specific context."},
+
+  {section:"Collocations & word formation", type:"gap",
+   q:"A passenger affected by a cancellation is ___ to re-routing or a full refund of their ticket.",
+   answer:"entitled", alts:["entitled to"],
+   exp:"<strong>Entitled to</strong> is the correct legal collocation: passengers are 'entitled to' (have a legal right to) compensation, re-routing, or a refund."},
+];
+
+let current = 0;
+let score = 0;
+let answers = [];
+let answered = false;
+let matchState = {};
+
+function startQuiz() {
+  showScreen('screen-quiz');
+  current = 0; score = 0; answers = [];
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQuestion() {
+  answered = false;
+  matchState = {};
+  const q = QUESTIONS[current];
+  const total = QUESTIONS.length;
+  document.getElementById('q-counter').textContent = `${current+1} / ${total}`;
+  document.getElementById('progress-bar').style.width = `${((current)/total)*100}%`;
+  document.getElementById('score-live').textContent = `${score} pts`;
+  document.getElementById('btn-next').classList.remove('show');
+
+  const area = document.getElementById('question-area');
+  let html = `<div class="section-tag">${q.section}</div>`;
+  html += `<div class="question-card">`;
+  html += `<div class="q-type">${typeLabel(q.type)}</div>`;
+
+  if (q.type === 'mcq') {
+    html += `<div class="q-text">${q.q}</div>`;
+    html += `<div class="options">`;
+    const letters = ['A','B','C','D'];
+    q.options.forEach((opt, i) => {
+      html += `<button class="option" id="opt-${i}" onclick="selectMCQ(${i})"><span class="opt-letter">${letters[i]}</span>${opt}</button>`;
+    });
+    html += `</div>`;
+  } else if (q.type === 'gap') {
+    html += `<div class="q-text">${q.q.replace('___', '<span class="blank">__________</span>')}</div>`;
+    html += `<input class="gap-input" id="gap-input" placeholder="Type your answer here…" onkeydown="if(event.key==='Enter')checkGap()">`;
+    html += `<div style="margin-top:8px"><button class="option" onclick="checkGap()" style="display:inline-flex;width:auto;padding:8px 18px;font-size:13px;">Check answer</button></div>`;
+  }
+
+  html += `<div class="feedback" id="feedback"></div>`;
+  html += `</div>`;
+  area.innerHTML = html;
+
+  if (q.type === 'gap') {
+    document.getElementById('gap-input').focus();
+  }
+}
+
+function typeLabel(t) {
+  return {mcq:'Multiple choice',gap:'Gap fill — write the missing word(s)',matching:'Matching'}[t] || t;
+}
+
+function selectMCQ(chosen) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const correct = q.answer;
+  const opts = document.querySelectorAll('.option');
+  opts.forEach((o,i) => {
+    o.disabled = true;
+    if (i === correct) o.classList.add('correct');
+    else if (i === chosen) o.classList.add('incorrect');
+  });
+  const isCorrect = chosen === correct;
+  if (isCorrect) score++;
+  showFeedback(isCorrect, q.exp, q.options[correct]);
+  answers.push({q: q.q, correct: isCorrect, yourAnswer: q.options[chosen], rightAnswer: q.options[correct]});
+}
+
+function checkGap() {
+  if (answered) return;
+  const q = QUESTIONS[current];
+  const input = document.getElementById('gap-input');
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  answered = true;
+  input.disabled = true;
+  const accepted = [q.answer.toLowerCase(), ...(q.alts||[]).map(a=>a.toLowerCase())];
+  const isCorrect = accepted.some(a => val === a || val.replace(/[^a-z\s]/g,'') === a.replace(/[^a-z\s]/g,''));
+  input.classList.add(isCorrect ? 'correct' : 'incorrect');
+  if (isCorrect) score++;
+  showFeedback(isCorrect, q.exp, q.answer);
+  answers.push({q: q.q, correct: isCorrect, yourAnswer: input.value, rightAnswer: q.answer});
+}
+
+function showFeedback(isCorrect, exp, correct) {
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'fail');
+  fb.innerHTML = (isCorrect ? '✓ Correct! ' : `✗ Incorrect. The answer is: <strong>${correct}</strong>. `) + (exp || '');
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function showResults() {
+  showScreen('screen-results');
+  const total = QUESTIONS.length;
+  const pct = Math.round((score/total)*100);
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('progress-bar').style.width = '100%';
+
+  let title, sub;
+  if (pct >= 85) { title = 'Excellent work! ✈'; sub = 'Outstanding command of B2–C1 airport vocabulary. You are ready for professional contexts.'; }
+  else if (pct >= 70) { title = 'Good job!'; sub = 'Solid B2 vocabulary. Review the C1 sections on operations and passenger rights to reach the next level.'; }
+  else if (pct >= 55) { title = 'Good progress'; sub = 'You have a working knowledge of the topic. Focus on collocations and formal register to improve.'; }
+  else { title = 'Keep studying!'; sub = 'Review the vocabulary guide and try again. Pay particular attention to sections on disruption and customs.'; }
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = sub;
+
+  // Breakdown by section
+  const sections = {};
+  QUESTIONS.forEach((q,i) => {
+    if (!sections[q.section]) sections[q.section] = {correct:0,total:0};
+    sections[q.section].total++;
+    if (answers[i] && answers[i].correct) sections[q.section].correct++;
+  });
+  const bd = document.getElementById('breakdown');
+  bd.innerHTML = Object.entries(sections).map(([sec, data]) => {
+    const sp = Math.round((data.correct/data.total)*100);
+    const cls = sp>=80?'good':sp>=55?'mid':'low';
+    return `<div class="bk-card ${cls}"><div class="bk-n">${sp}%</div><div class="bk-l">${sec}</div></div>`;
+  }).join('');
+
+  // Wrong answers review
+  const wrong = answers.filter(a => !a.correct);
+  const ri = document.getElementById('review-items');
+  if (wrong.length === 0) {
+    ri.innerHTML = '<p style="font-size:13px;color:var(--green);padding:8px 0;">All correct! 🎉</p>';
+  } else {
+    ri.innerHTML = wrong.map(a => `
+      <div class="review-item">
+        <div class="ri-q">${a.q.substring(0,80)}${a.q.length>80?'…':''}</div>
+        <div class="ri-a">
+          <span class="ri-wrong">${a.yourAnswer}</span>
+          <span style="color:var(--text-muted)">→</span>
+          <span class="ri-right">${a.rightAnswer}</span>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+</script>
+</body>
+</html>

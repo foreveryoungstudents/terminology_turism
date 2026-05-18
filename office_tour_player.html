@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Office Tour — Travel Agency</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal-dark:  #00695C;
+  --teal-mid:   #00897B;
+  --teal-rule:  #4DB6AC;
+  --teal-light: #E0F2F1;
+  --teal-pale:  #F4FDFC;
+  --text:       #1A1A1A;
+  --muted:      #546E7A;
+  --faint:      #8FA8B0;
+  --border:     #CFE8E5;
+  --bg:         #FFFFFF;
+  --bg2:        #F5FAFA;
+  --amber-bg:   #FFF8E1;
+  --amber-text: #7C5A00;
+  --amber-bdr:  #FFD54F;
+  --r:          8px;
+  --rl:         12px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 2rem 1rem 3rem;
+}
+
+.container { max-width: 780px; margin: 0 auto; }
+
+/* ── Header ── */
+.header { margin-bottom: 2rem; }
+.header-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--teal-rule);
+}
+.header h1 { font-size: 24px; font-weight: 700; color: var(--teal-dark); line-height: 1.2; }
+.header .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.badge {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px;
+  background: var(--teal-light); color: var(--teal-dark);
+  border: 1px solid var(--teal-rule);
+  white-space: nowrap; align-self: flex-start; margin-top: 4px;
+}
+
+/* ── Scenario bar ── */
+.scenario {
+  background: var(--teal-pale);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--teal-mid);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+.scenario strong { color: var(--teal-dark); }
+
+/* ── Player controls ── */
+.controls {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.ctrl-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ctrl-label { font-size: 12px; color: var(--muted); min-width: 60px; text-transform: uppercase; letter-spacing: .04em; }
+
+.acc-btn {
+  padding: 6px 15px; font-size: 13px; font-weight: 500;
+  border-radius: var(--r); border: 1px solid var(--border);
+  background: var(--bg2); color: var(--muted); cursor: pointer; transition: all .15s;
+}
+.acc-btn:hover { border-color: var(--teal-rule); color: var(--teal-dark); }
+.acc-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-rule); }
+
+.speed-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 180px; }
+input[type=range] { flex: 1; height: 4px; accent-color: var(--teal-mid); cursor: pointer; }
+.speed-val { font-size: 13px; font-weight: 600; color: var(--teal-dark); min-width: 34px; }
+
+.play-all-btn, .stop-btn {
+  padding: 7px 16px; font-size: 13px; font-weight: 500;
+  border-radius: var(--r); border: 1px solid var(--border);
+  background: var(--bg); color: var(--text);
+  cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.play-all-btn:hover { background: var(--teal-light); border-color: var(--teal-rule); color: var(--teal-dark); }
+.play-all-btn.playing { background: var(--teal-mid); border-color: var(--teal-mid); color: #fff; }
+.stop-btn:hover { background: #F5F5F5; }
+
+.counter { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+/* ── View toggle ── */
+.view-toggle { display: flex; gap: 6px; margin-bottom: 1.1rem; }
+.view-btn {
+  padding: 5px 14px; font-size: 12px; font-weight: 500;
+  border-radius: var(--r); border: 1px solid var(--border);
+  background: var(--bg); color: var(--muted); cursor: pointer; transition: all .15s;
+}
+.view-btn:hover { border-color: var(--teal-rule); }
+.view-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-rule); }
+
+/* ── Speaker labels ── */
+.speaker-mgr { font-size: 11px; font-weight: 700; color: var(--teal-dark); text-transform: uppercase; letter-spacing: .05em; }
+.speaker-stu { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+/* ── Phrase rows ── */
+.phrase-list { display: flex; flex-direction: column; gap: 6px; }
+
+.phrase-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  transition: border-color .15s, background .15s;
+}
+.phrase-row.mgr { border-left: 3px solid var(--teal-mid); }
+.phrase-row.stu { border-left: 3px solid var(--border); background: var(--bg2); }
+.phrase-row:hover { border-color: var(--teal-rule); }
+.phrase-row.playing { border-color: var(--teal-mid) !important; background: var(--teal-light) !important; }
+
+.play-btn {
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 50%; border: 1px solid var(--border);
+  background: var(--bg2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; margin-top: 1px;
+}
+.play-btn:hover { background: var(--teal-light); border-color: var(--teal-rule); }
+.play-btn svg { width: 12px; height: 12px; fill: var(--muted); }
+.play-btn:hover svg { fill: var(--teal-dark); }
+.phrase-row.playing .play-btn { background: var(--teal-mid); border-color: var(--teal-mid); }
+.phrase-row.playing .play-btn svg { fill: #fff; }
+
+.phrase-content { flex: 1; min-width: 0; }
+.phrase-meta { margin-bottom: 4px; }
+.phrase-en { font-size: 14px; line-height: 1.6; color: var(--text); }
+.phrase-en.mgr-text { font-weight: 500; }
+.phrase-ipa { font-size: 11.5px; color: var(--teal-dark); margin-top: 3px; font-family: "Courier New", monospace; }
+.phrase-ru { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+.hl {
+  background: #B2DFDB;
+  border-radius: 3px;
+  padding: 0 2px;
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+/* ── Section divider ── */
+.section-div {
+  display: flex; align-items: center; gap: 10px;
+  margin: 1.2rem 0 .8rem;
+}
+.section-div span {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--teal-dark);
+  white-space: nowrap; background: var(--bg2); padding: 0 8px;
+}
+.section-div::before, .section-div::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Vocab panel ── */
+.vocab-panel {
+  margin-top: 2rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  overflow: hidden;
+}
+.vocab-panel-head {
+  padding: 12px 16px;
+  background: var(--teal-light);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; color: var(--teal-dark);
+  display: flex; align-items: center; gap: 8px;
+}
+.vocab-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vocab-table th {
+  text-align: left; padding: 8px 14px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.vocab-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.vocab-table tr:last-child td { border-bottom: none; }
+.vocab-table tr:nth-child(even) td { background: var(--teal-pale); }
+.vocab-table .term { font-weight: 600; color: var(--teal-dark); }
+.vocab-table .ru { color: var(--muted); }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 2.5rem; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--faint); text-align: center;
+  line-height: 1.7;
+}
+
+@media(max-width:520px) {
+  .ctrl-row { flex-direction: column; align-items: flex-start; }
+  .counter { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>Welcome to the team</h1>
+      <div class="sub">Office tour · Travel agency · A2–B1</div>
+    </div>
+    <div class="badge">ТИГ — профессиональный English</div>
+  </div>
+</div>
+
+<!-- Scenario -->
+<div class="scenario">
+  <strong>Situation:</strong> It is your first day at <em>Horizon Travel Agency</em>. Your manager, Sarah, is showing you around the office before you start work. Listen carefully — she will explain where everything is and what each area is for.
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="ctrl-row">
+    <span class="ctrl-label">Accent</span>
+    <button class="acc-btn active" id="btn-us" onclick="setAccent('us')">🇺🇸 American</button>
+    <button class="acc-btn" id="btn-gb" onclick="setAccent('gb')">🇬🇧 British</button>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Speed</span>
+    <div class="speed-wrap">
+      <input type="range" min="0.5" max="1.1" step="0.1" value="0.85" id="speed-slider" oninput="updateSpeed(this.value)">
+      <span class="speed-val" id="speed-val">0.85×</span>
+    </div>
+  </div>
+  <div class="ctrl-row">
+    <button class="play-all-btn" id="play-all-btn" onclick="playAll()">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><polygon points="3,2 14,8 3,14"/></svg>
+      Play full tour
+    </button>
+    <button class="stop-btn" onclick="stopAll()">◼ Stop</button>
+    <span class="counter" id="counter"></span>
+  </div>
+</div>
+
+<!-- View toggle -->
+<div class="view-toggle">
+  <button class="view-btn active" id="vbtn-all"  onclick="setView('all')">Text + IPA + Translation</button>
+  <button class="view-btn" id="vbtn-ipa"  onclick="setView('ipa')">Text + IPA</button>
+  <button class="view-btn" id="vbtn-text" onclick="setView('text')">Text only</button>
+</div>
+
+<!-- Dialogue -->
+<div class="phrase-list" id="phrase-list"></div>
+
+<!-- Vocabulary panel -->
+<div class="vocab-panel">
+  <div class="vocab-panel-head">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="12" x2="11" y2="12"/></svg>
+    Key vocabulary from this dialogue
+  </div>
+  <table class="vocab-table">
+    <thead><tr><th>Term</th><th>Русский</th><th>Used in the text</th></tr></thead>
+    <tbody>
+      <tr><td class="term">reception desk</td><td class="ru">стойка ресепшн</td><td>…this is our reception desk, right here at the entrance…</td></tr>
+      <tr><td class="term">waiting area</td><td class="ru">зона ожидания</td><td>…the waiting area is just to your left…</td></tr>
+      <tr><td class="term">brochure rack</td><td class="ru">стойка с брошюрами</td><td>…the brochure rack next to the sofa…</td></tr>
+      <tr><td class="term">consultation zone</td><td class="ru">зона консультаций</td><td>…this is the consultation zone — the heart of the office…</td></tr>
+      <tr><td class="term">booking counter</td><td class="ru">стойка для бронирования</td><td>…your workstation is at the booking counter…</td></tr>
+      <tr><td class="term">dual-monitor setup</td><td class="ru">двухмониторная система</td><td>…each station has a dual-monitor setup…</td></tr>
+      <tr><td class="term">map wall</td><td class="ru">стена с картами</td><td>…that entire back wall is our map wall…</td></tr>
+      <tr><td class="term">back office</td><td class="ru">бэк-офис</td><td>…the back office is through that door…</td></tr>
+      <tr><td class="term">private meeting room</td><td class="ru">переговорная комната</td><td>…our private meeting room is at the far end…</td></tr>
+      <tr><td class="term">interactive screen</td><td class="ru">интерактивный экран</td><td>…the large interactive screen near the entrance…</td></tr>
+      <tr><td class="term">floor-to-ceiling windows</td><td class="ru">панорамные окна</td><td>…those floor-to-ceiling windows let in so much light…</td></tr>
+      <tr><td class="term">ambient lighting</td><td class="ru">мягкое освещение</td><td>…we use ambient lighting in the evenings…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Web Speech API · Chrome, Edge, Safari · Voice quality depends on your OS language packs<br>
+  Highlighted words = key vocabulary · ТИГ A2–B1
+</div>
+
+</div>
+
+<script>
+const DIALOGUE = [
+  { section: "Entering the office" },
+  { who:"mgr", en:"Good morning! Welcome to Horizon Travel Agency — I'm so glad you're joining us. I'm Sarah, the office manager. Let me show you around before we get started.",
+    ru:"Доброе утро! Добро пожаловать в Horizon Travel Agency — так рада, что вы к нам присоединяетесь. Я Сара, офис-менеджер. Давайте я покажу вам всё, прежде чем мы начнём.",
+    us:"ɡʊd ˈmɔːrnɪŋ ˈwɛlkəm tə həˈraɪzən ˈtrævəl ˈeɪdʒənsi aɪm soʊ ɡlæd jər ˈdʒɔɪnɪŋ ʌs aɪm ˈseərə ðə ˈɔːfɪs ˈmænɪdʒər lɛt miː ʃoʊ juː əˈraʊnd bɪˈfɔːr wiː ɡɛt ˈstɑːrtɪd",
+    gb:"ɡʊd ˈmɔːnɪŋ ˈwɛlkəm tə həˈraɪzən ˈtrævl ˈeɪdʒənsi aɪm səʊ ɡlæd jə ˈdʒɔɪnɪŋ ʌs aɪm ˈseərə ðə ˈɒfɪs ˈmænɪdʒə lɛt miː ʃəʊ juː əˈraʊnd bɪˈfɔː wiː ɡɛt ˈstɑːtɪd" },
+  { who:"stu", en:"Thank you, Sarah. I'm really excited to be here.",
+    ru:"Спасибо, Сара. Я очень рад(а) быть здесь.",
+    us:"θæŋk juː ˈseərə aɪm ˈrɪəli ɪkˈsaɪtɪd tə bi hɪr",
+    gb:"θæŋk juː ˈseərə aɪm ˈrɪəli ɪkˈsaɪtɪd tə bi hɪə" },
+
+  { section: "Reception area" },
+  { who:"mgr", en:"So, first things first — this is our <hl>reception desk</hl>, right here at the entrance. This is where clients are greeted when they walk in. We always try to have someone here during opening hours.",
+    ru:"Итак, для начала — это наша стойка ресепшн, прямо у входа. Здесь встречают клиентов, когда они входят. Мы всегда стараемся, чтобы кто-то дежурил здесь в рабочее время.",
+    us:"soʊ fɜːrst θɪŋz fɜːrst ðɪs ɪz aʊər rɪˈsɛpʃən dɛsk raɪt hɪr æt ðə ˈɛntrəns ðɪs ɪz wɛr ˈklaɪənts ər ˈɡriːtɪd wɛn ðeɪ wɔːk ɪn wiː ˈɔːlweɪz traɪ tə hæv ˈsʌmwʌn hɪr ˈdjʊərɪŋ ˈoʊpənɪŋ aʊərz",
+    gb:"səʊ fɜːst θɪŋz fɜːst ðɪs ɪz aʊə rɪˈsɛpʃən dɛsk raɪt hɪər æt ðə ˈɛntrəns ðɪs ɪz weə ˈklaɪənts ə ˈɡriːtɪd wɛn ðeɪ wɔːk ɪn wiː ˈɔːlweɪz traɪ tə hæv ˈsʌmwʌn hɪər ˈdjʊərɪŋ ˈəʊpənɪŋ ˈaʊəz" },
+  { who:"stu", en:"Got it. And those brochures on the desk — are they for clients to take?",
+    ru:"Понятно. А те брошюры на стойке — их можно брать клиентам?",
+    us:"ɡɒt ɪt ænd ðoʊz brəˈʃʊrz ɒn ðə dɛsk ɑːr ðeɪ fər ˈklaɪənts tə teɪk",
+    gb:"ɡɒt ɪt ænd ðəʊz ˈbrɒʃəz ɒn ðə dɛsk ɑː ðeɪ fə ˈklaɪənts tə teɪk" },
+  { who:"mgr", en:"Exactly. And you'll see the <hl>brochure rack</hl> just next to the sofa — we keep our most popular destinations there. We restock it every Monday morning.",
+    ru:"Именно. И вы увидите стойку с брошюрами прямо рядом с диваном — там мы храним самые популярные направления. Пополняем её каждое утро в понедельник.",
+    us:"ɪɡˈzæktli ænd juːl siː ðə brəˈʃʊr ræk dʒʌst nɛkst tə ðə ˈsoʊfə wiː kiːp aʊər moʊst ˈpɒpjələr ˌdɛstɪˈneɪʃənz ðɛr wiː rɪˈstɒk ɪt ˈɛvri ˈmʌndeɪ ˈmɔːrnɪŋ",
+    gb:"ɪɡˈzæktli ænd juːl siː ðə ˈbrɒʃə ræk dʒʌst nɛkst tə ðə ˈsəʊfə wiː kiːp aʊə məʊst ˈpɒpjʊlə ˌdɛstɪˈneɪʃənz ðeə wiː rɪˈstɒk ɪt ˈɛvri ˈmʌndeɪ ˈmɔːnɪŋ" },
+
+  { section: "Waiting area" },
+  { who:"mgr", en:"Now, the <hl>waiting area</hl> is just to your left — those comfortable sofas and the low coffee table. Clients sit here while we prepare their documents or check availability.",
+    ru:"Теперь зона ожидания — вот слева — те удобные диваны и невысокий журнальный столик. Клиенты сидят здесь, пока мы готовим документы или проверяем наличие мест.",
+    us:"naʊ ðə ˈweɪtɪŋ ˈɛriə ɪz dʒʌst tə jər lɛft ðoʊz ˈkʌmftəbəl ˈsoʊfəz ænd ðə loʊ ˈkɒfi ˈteɪbəl ˈklaɪənts sɪt hɪr waɪl wiː prɪˈpɛr ðɛr ˈdɒkjʊmənts ɔːr tʃɛk əˌvɛɪləˈbɪlɪti",
+    gb:"naʊ ðə ˈweɪtɪŋ ˈɪəriə ɪz dʒʌst tə jə lɛft ðəʊz ˈkʌmftəbl ˈsəʊfəz ænd ðə ləʊ ˈkɒfi ˈteɪbl ˈklaɪənts sɪt hɪə waɪl wiː prɪˈpeə ðeə ˈdɒkjʊmənts ɔː tʃɛk əˌveɪləˈbɪlɪti" },
+  { who:"mgr", en:"We also have a small coffee machine and a selection of travel magazines there. It makes the wait feel a little less like waiting.",
+    ru:"У нас ещё есть небольшая кофемашина и подборка туристических журналов. Это делает ожидание чуть менее томительным.",
+    us:"wiː ˈɔːlsoʊ hæv ə smɔːl ˈkɒfi məˈʃiːn ænd ə sɪˈlɛkʃən əv ˈtrævəl məˈɡæzɪnz ðɛr ɪt meɪks ðə weɪt fiːl ə ˈlɪtəl lɛs laɪk ˈweɪtɪŋ",
+    gb:"wiː ˈɔːlsəʊ hæv ə smɔːl ˈkɒfi məˈʃiːn ænd ə sɪˈlɛkʃən əv ˈtrævl məˈɡæzɪnz ðeə ɪt meɪks ðə weɪt fiːl ə ˈlɪtl lɛs laɪk ˈweɪtɪŋ" },
+
+  { section: "Consultation zone & booking counters" },
+  { who:"mgr", en:"This is the <hl>consultation zone</hl> — really the heart of the office. Each consultant has their own workstation at the <hl>booking counter</hl>. Your station will be the third one from the window.",
+    ru:"Это зона консультаций — настоящее сердце офиса. У каждого консультанта своя рабочая станция у стойки бронирования. Ваше место будет третьим от окна.",
+    us:"ðɪs ɪz ðə ˌkɑːnsəlˈteɪʃən zoʊn ˈrɪəli ðə hɑːrt əv ðə ˈɔːfɪs iːtʃ kənˈsʌltənt hæz ðɛr oʊn ˈwɜːrkˌsteɪʃən æt ðə ˈbʊkɪŋ ˈkaʊntər jər ˈsteɪʃən wɪl bi ðə θɜːrd wʌn frəm ðə ˈwɪndoʊ",
+    gb:"ðɪs ɪz ðə ˌkɒnsəlˈteɪʃən zəʊn ˈrɪəli ðə hɑːt əv ðə ˈɒfɪs iːtʃ kənˈsʌltənt hæz ðeər əʊn ˈwɜːkˌsteɪʃən æt ðə ˈbʊkɪŋ ˈkaʊntə jə ˈsteɪʃən wɪl bi ðə θɜːd wʌn frəm ðə ˈwɪndəʊ" },
+  { who:"stu", en:"Oh great — it has a <hl>dual-monitor setup</hl>! That will be really helpful for checking availability while talking to a client.",
+    ru:"О, отлично — здесь двухмониторная система! Это очень удобно: проверять наличие мест, пока разговариваешь с клиентом.",
+    us:"oʊ ɡreɪt ɪt hæz ə ˈduːəl ˈmɒnɪtər ˈsɛtʌp ðæt wɪl bi ˈrɪəli ˈhɛlpfəl fər ˈtʃɛkɪŋ əˌveɪləˈbɪlɪti waɪl ˈtɔːkɪŋ tə ə ˈklaɪənt",
+    gb:"əʊ ɡreɪt ɪt hæz ə ˈdjuːəl ˈmɒnɪtə ˈsɛtʌp ðæt wɪl bi ˈrɪəli ˈhɛlpfʊl fə ˈtʃɛkɪŋ əˌveɪləˈbɪlɪti waɪl ˈtɔːkɪŋ tə ə ˈklaɪənt" },
+  { who:"mgr", en:"Exactly — all our stations have a <hl>dual-monitor setup</hl>. One screen for our booking software, one for communication with clients. You'll get a quick training on the reservation system this afternoon.",
+    ru:"Именно — на всех рабочих местах двухмониторная система. Один экран — для программы бронирования, второй — для общения с клиентами. Сегодня после обеда у вас будет краткое обучение системе бронирования.",
+    us:"ɪɡˈzæktli ɔːl aʊər ˈsteɪʃənz hæv ə ˈduːəl ˈmɒnɪtər ˈsɛtʌp wʌn skriːn fər aʊər ˈbʊkɪŋ ˈsɔːftwɛr wʌn fər kəˌmjuːnɪˈkeɪʃən wɪð ˈklaɪənts juːl ɡɛt ə kwɪk ˈtreɪnɪŋ ɒn ðə ˌrɛzərˈveɪʃən ˈsɪstəm ðɪs ˌæftərˈnuːn",
+    gb:"ɪɡˈzæktli ɔːl aʊə ˈsteɪʃənz hæv ə ˈdjuːəl ˈmɒnɪtə ˈsɛtʌp wʌn skriːn fə aʊə ˈbʊkɪŋ ˈsɒftwɛː wʌn fə kəˌmjuːnɪˈkeɪʃən wɪð ˈklaɪənts juːl ɡɛt ə kwɪk ˈtreɪnɪŋ ɒn ðə ˌrɛzəˈveɪʃən ˈsɪstəm ðɪs ˌɑːftəˈnuːn" },
+
+  { section: "The map wall & décor" },
+  { who:"mgr", en:"Now, look at that entire back wall — that's our <hl>map wall</hl>. We pin every destination we've ever booked for a client. It's a great conversation starter.",
+    ru:"Посмотрите на эту целую заднюю стену — это наша стена с картами. Мы отмечаем булавкой каждое направление, которое когда-либо бронировали для клиента. Отличный повод начать разговор.",
+    us:"naʊ lʊk æt ðæt ɪnˈtaɪər bæk wɔːl ðæts aʊər mæp wɔːl wiː pɪn ˈɛvri ˌdɛstɪˈneɪʃən wiːv ˈɛvər bʊkt fər ə ˈklaɪənt ɪts ə ɡreɪt ˌkɒnvəˈseɪʃən ˈstɑːrtər",
+    gb:"naʊ lʊk æt ðæt ɪnˈtaɪə bæk wɔːl ðæts aʊə mæp wɔːl wiː pɪn ˈɛvri ˌdɛstɪˈneɪʃən wiːv ˈɛvə bʊkt fə ə ˈklaɪənt ɪts ə ɡreɪt ˌkɒnvəˈseɪʃən ˈstɑːtə" },
+  { who:"stu", en:"It looks amazing. There must be hundreds of pins on there.",
+    ru:"Выглядит потрясающе. Там, наверное, сотни булавок.",
+    us:"ɪt lʊks əˈmeɪzɪŋ ðɛr mʌst bi ˈhʌndrɪdz əv pɪnz ɒn ðɛr",
+    gb:"ɪt lʊks əˈmeɪzɪŋ ðeə mʌst bi ˈhʌndrɪdz əv pɪnz ɒn ðeə" },
+  { who:"mgr", en:"Over three hundred, yes! And those <hl>floor-to-ceiling windows</hl> on the left — they let in so much natural light. We use <hl>ambient lighting</hl> in the evenings to keep the atmosphere warm and welcoming.",
+    ru:"Более трёхсот, да! А те панорамные окна слева — они пропускают так много естественного света. По вечерам мы используем мягкое освещение, чтобы поддерживать тёплую и уютную атмосферу.",
+    us:"ˈoʊvər θriː ˈhʌndrɪd jɛs ænd ðoʊz flɔːr tə ˈsiːlɪŋ ˈwɪndoʊz ɒn ðə lɛft ðeɪ lɛt ɪn soʊ mʌtʃ ˈnætʃərəl laɪt wiː juːz ˈæmbiənt ˈlaɪtɪŋ ɪn ðə ˈiːvnɪŋz tə kiːp ðə ˈætməsfɪr wɔːrm ænd ˈwɛlkəmɪŋ",
+    gb:"ˈəʊvə θriː ˈhʌndrɪd jɛs ænd ðəʊz flɔː tə ˈsiːlɪŋ ˈwɪndəʊz ɒn ðə lɛft ðeɪ lɛt ɪn səʊ mʌtʃ ˈnætʃrəl laɪt wiː juːz ˈæmbiənt ˈlaɪtɪŋ ɪn ðə ˈiːvnɪŋz tə kiːp ðə ˈætməsfɪə wɔːm ænd ˈwɛlkəmɪŋ" },
+
+  { section: "Digital screen" },
+  { who:"mgr", en:"Have you noticed the large <hl>interactive screen</hl> near the entrance? It rotates images of our featured destinations. Clients often stop to look at it while they wait — it's great for inspiration.",
+    ru:"Вы заметили большой интерактивный экран у входа? Он показывает фотографии наших избранных направлений. Клиенты часто останавливаются, чтобы посмотреть, пока ждут, — отличный источник вдохновения.",
+    us:"hæv juː ˈnoʊtɪst ðə lɑːrdʒ ˌɪntərˈæktɪv skriːn nɪr ðə ˈɛntrəns ɪt roʊˈteɪts ˈɪmɪdʒɪz əv aʊər ˈfiːtʃərd ˌdɛstɪˈneɪʃənz ˈklaɪənts ˈɔːfən stɒp tə lʊk æt ɪt waɪl ðeɪ weɪt ɪts ɡreɪt fər ˌɪnspɪˈreɪʃən",
+    gb:"hæv juː ˈnəʊtɪst ðə lɑːdʒ ˌɪntərˈæktɪv skriːn nɪər ðə ˈɛntrəns ɪt rəʊˈteɪts ˈɪmɪdʒɪz əv aʊə ˈfiːtʃəd ˌdɛstɪˈneɪʃənz ˈklaɪənts ˈɒfən stɒp tə lʊk æt ɪt waɪl ðeɪ weɪt ɪts ɡreɪt fər ˌɪnspɪˈreɪʃən" },
+  { who:"stu", en:"Yes, I saw it when I came in — it looked really professional.",
+    ru:"Да, я заметил(а) его, когда входил(а) — смотрится очень профессионально.",
+    us:"jɛs aɪ sɔː ɪt wɛn aɪ keɪm ɪn ɪt lʊkt ˈrɪəli prəˈfɛʃənəl",
+    gb:"jɛs aɪ sɔː ɪt wɛn aɪ keɪm ɪn ɪt lʊkt ˈrɪəli prəˈfɛʃənl" },
+
+  { section: "Back office & meeting room" },
+  { who:"mgr", en:"Through that door is the <hl>back office</hl> — that's where we handle paperwork, print booking confirmations, and keep all our filing. It's not glamorous, but it's important!",
+    ru:"За той дверью — бэк-офис: там мы занимаемся документами, печатаем подтверждения бронирования и ведём архив. Не гламурно, но очень важно!",
+    us:"θruː ðæt dɔːr ɪz ðə bæk ˈɔːfɪs ðæts wɛr wiː ˈhændəl ˈpeɪpərwɜːrk prɪnt ˈbʊkɪŋ ˌkɒnfərˈmeɪʃənz ænd kiːp ɔːl aʊər ˈfaɪlɪŋ ɪts nɒt ˈɡlæmərəs bʌt ɪts ɪmˈpɔːrtənt",
+    gb:"θruː ðæt dɔː ɪz ðə bæk ˈɒfɪs ðæts weə wiː ˈhændl ˈpeɪpəwɜːk prɪnt ˈbʊkɪŋ ˌkɒnfəˈmeɪʃənz ænd kiːp ɔːl aʊə ˈfaɪlɪŋ ɪts nɒt ˈɡlæmərəs bʌt ɪts ɪmˈpɔːtənt" },
+  { who:"mgr", en:"And finally, our <hl>private meeting room</hl> is at the far end — the glass-walled room on the right. We use it for group bookings, detailed itinerary planning, and client presentations. It has a 75-inch smart TV for showing destination videos.",
+    ru:"И наконец, наша переговорная комната — в самом дальнем конце, стеклянная комната справа. Мы используем её для групповых бронирований, детального планирования маршрутов и презентаций для клиентов. В ней есть смарт-телевизор 75 дюймов для показа видео о направлениях.",
+    us:"ænd ˈfaɪnəli aʊər ˈpraɪvɪt ˈmiːtɪŋ ruːm ɪz æt ðə fɑːr ɛnd ðə ɡlɑːs wɔːld ruːm ɒn ðə raɪt wiː juːz ɪt fər ɡruːp ˈbʊkɪŋz dɪˈteɪld aɪˈtɪnərɛri ˈplænɪŋ ænd ˈklaɪənt ˌprɛzənˈteɪʃənz ɪt hæz ə ˈsɛvənti faɪv ɪntʃ smɑːrt ˌtiːˈviː fər ˈʃoʊɪŋ ˌdɛstɪˈneɪʃən ˈvɪdioʊz",
+    gb:"ænd ˈfaɪnəli aʊə ˈpraɪvɪt ˈmiːtɪŋ ruːm ɪz æt ðə fɑːr ɛnd ðə ɡlɑːs wɔːld ruːm ɒn ðə raɪt wiː juːz ɪt fə ɡruːp ˈbʊkɪŋz dɪˈteɪld aɪˈtɪnərəri ˈplænɪŋ ænd ˈklaɪənt ˌprɛzənˈteɪʃənz ɪt hæz ə ˈsɛvənti faɪv ɪntʃ smɑːt ˌtiːˈviː fə ˈʃəʊɪŋ ˌdɛstɪˈneɪʃən ˈvɪdiəʊz" },
+  { who:"stu", en:"That's a really impressive space. I can see why clients feel comfortable here.",
+    ru:"Это действительно впечатляющее пространство. Понятно, почему клиенты чувствуют себя здесь уютно.",
+    us:"ðæts ə ˈrɪəli ɪmˈprɛsɪv speɪs aɪ kæn siː waɪ ˈklaɪənts fiːl ˈkʌmftəbəl hɪr",
+    gb:"ðæts ə ˈrɪəli ɪmˈprɛsɪv speɪs aɪ kæn siː waɪ ˈklaɪənts fiːl ˈkʌmftəbl hɪə" },
+
+  { section: "Wrap-up" },
+  { who:"mgr", en:"That's the whole tour! Any questions about the layout or where things are?",
+    ru:"Вот и весь осмотр! Есть вопросы о планировке или о том, где что находится?",
+    us:"ðæts ðə hoʊl tʊr ˈɛni ˈkwɛstʃənz əˈbaʊt ðə ˈleɪaʊt ɔːr wɛr θɪŋz ɑːr",
+    gb:"ðæts ðə həʊl tʊə ˈɛni ˈkwɛstʃənz əˈbaʊt ðə ˈleɪaʊt ɔː weə θɪŋz ɑː" },
+  { who:"stu", en:"I think I've got a good picture of everything. Thank you so much, Sarah — I'm looking forward to getting started!",
+    ru:"Думаю, я хорошо всё себе представил(а). Большое спасибо, Сара — не терпится приступить к работе!",
+    us:"aɪ θɪŋk aɪv ɡɒt ə ɡʊd ˈpɪktʃər əv ˈɛvriθɪŋ θæŋk juː soʊ mʌtʃ ˈseərə aɪm ˈlʊkɪŋ ˈfɔːrwərd tə ˈɡɛtɪŋ ˈstɑːrtɪd",
+    gb:"aɪ θɪŋk aɪv ɡɒt ə ɡʊd ˈpɪktʃər əv ˈɛvrɪθɪŋ θæŋk juː səʊ mʌtʃ ˈseərə aɪm ˈlʊkɪŋ ˈfɔːwəd tə ˈɡɛtɪŋ ˈstɑːtɪd" },
+  { who:"mgr", en:"Wonderful! Let's get you settled in. Your first client appointment is at ten o'clock — I'll be right here if you need anything.",
+    ru:"Замечательно! Давайте устроим вас на место. Ваш первый клиент — в десять утра. Я буду рядом, если что-то понадобится.",
+    us:"ˈwʌndərfəl lɛts ɡɛt juː ˈsɛtld ɪn jər fɜːrst ˈklaɪənt əˈpɔɪntmənt ɪz æt tɛn əˈklɒk aɪl bi raɪt hɪr ɪf juː niːd ˈɛniθɪŋ",
+    gb:"ˈwʌndəfl lɛts ɡɛt juː ˈsɛtld ɪn jə fɜːst ˈklaɪənt əˈpɔɪntmənt ɪz æt tɛn əˈklɒk aɪl bi raɪt hɪər ɪf juː niːd ˈɛniθɪŋ" },
+];
+
+let accent = 'us';
+let rate = 0.85;
+let viewMode = 'all';
+let autoPlaying = false;
+const synth = window.speechSynthesis;
+
+function setAccent(a) {
+  accent = a;
+  document.getElementById('btn-us').classList.toggle('active', a === 'us');
+  document.getElementById('btn-gb').classList.toggle('active', a === 'gb');
+  renderDialogue();
+}
+
+function updateSpeed(v) {
+  rate = parseFloat(v);
+  document.getElementById('speed-val').textContent = parseFloat(v).toFixed(2).replace(/0+$/, '').replace(/\.$/, '') + '×';
+}
+
+function setView(v) {
+  viewMode = v;
+  ['all','ipa','text'].forEach(k => {
+    document.getElementById('vbtn-' + k).classList.toggle('active', k === v);
+  });
+  renderDialogue();
+}
+
+function stripHL(text) {
+  return text.replace(/<hl>(.*?)<\/hl>/g, '$1');
+}
+
+function renderHL(text) {
+  return text.replace(/<hl>(.*?)<\/hl>/g, '<span class="hl">$1</span>');
+}
+
+function renderDialogue() {
+  const list = document.getElementById('phrase-list');
+  list.innerHTML = '';
+  let rowIdx = 0;
+  DIALOGUE.forEach(item => {
+    if (item.section !== undefined) {
+      const div = document.createElement('div');
+      div.className = 'section-div';
+      div.innerHTML = `<span>${item.section}</span>`;
+      list.appendChild(div);
+      return;
+    }
+    const isMgr = item.who === 'mgr';
+    const ipa = accent === 'us' ? item.us : item.gb;
+    const row = document.createElement('div');
+    row.className = `phrase-row ${item.who}`;
+    row.id = 'row-' + rowIdx;
+
+    let inner = `
+      <button class="play-btn" onclick="speakOne(${rowIdx})" title="Play">
+        <svg viewBox="0 0 16 16"><polygon points="3,2 14,8 3,14"/></svg>
+      </button>
+      <div class="phrase-content">
+        <div class="phrase-meta">
+          <span class="${isMgr ? 'speaker-mgr' : 'speaker-stu'}">${isMgr ? 'Sarah (manager)' : 'You (new consultant)'}</span>
+        </div>
+        <div class="phrase-en ${isMgr ? 'mgr-text' : ''}">${renderHL(item.en)}</div>
+    `;
+    if (viewMode !== 'text') {
+      inner += `<div class="phrase-ipa">/${ipa}/</div>`;
+    }
+    if (viewMode === 'all' && item.ru) {
+      inner += `<div class="phrase-ru">${item.ru}</div>`;
+    }
+    inner += `</div>`;
+    row.innerHTML = inner;
+    list.appendChild(row);
+    rowIdx++;
+  });
+}
+
+function getLang() { return accent === 'us' ? 'en-US' : 'en-GB'; }
+
+function getVoice() {
+  const voices = synth.getVoices();
+  const lang = getLang();
+  return voices.find(v => v.lang === lang && v.localService)
+      || voices.find(v => v.lang === lang)
+      || voices.find(v => v.lang.startsWith(accent === 'us' ? 'en-US' : 'en-GB'))
+      || voices.find(v => v.lang.startsWith('en'))
+      || null;
+}
+
+function utterLine(text, cb) {
+  const u = new SpeechSynthesisUtterance(stripHL(text));
+  u.lang = getLang();
+  u.rate = rate;
+  const v = getVoice();
+  if (v) u.voice = v;
+  u.onend = cb;
+  u.onerror = cb;
+  synth.speak(u);
+}
+
+function getRows() {
+  return DIALOGUE.filter(d => d.who);
+}
+
+function highlight(idx) {
+  document.querySelectorAll('.phrase-row').forEach(r => r.classList.remove('playing'));
+  const r = document.getElementById('row-' + idx);
+  if (r) { r.classList.add('playing'); r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function clearHL() {
+  document.querySelectorAll('.phrase-row').forEach(r => r.classList.remove('playing'));
+}
+
+function speakOne(idx) {
+  stopAll();
+  const rows = getRows();
+  if (!rows[idx]) return;
+  highlight(idx);
+  utterLine(rows[idx].en, () => clearHL());
+}
+
+function playAll() {
+  stopAll();
+  autoPlaying = true;
+  document.getElementById('play-all-btn').classList.add('playing');
+  const rows = getRows();
+  let idx = 0;
+  const next = () => {
+    if (!autoPlaying || idx >= rows.length) {
+      clearHL();
+      document.getElementById('counter').textContent = '';
+      document.getElementById('play-all-btn').classList.remove('playing');
+      autoPlaying = false;
+      return;
+    }
+    document.getElementById('counter').textContent = (idx + 1) + ' / ' + rows.length;
+    highlight(idx);
+    utterLine(rows[idx].en, () => {
+      clearHL();
+      idx++;
+      if (autoPlaying) setTimeout(next, 550);
+    });
+  };
+  next();
+}
+
+function stopAll() {
+  autoPlaying = false;
+  synth.cancel();
+  clearHL();
+  document.getElementById('counter').textContent = '';
+  document.getElementById('play-all-btn').classList.remove('playing');
+}
+
+if (typeof synth.onvoiceschanged !== 'undefined') synth.onvoiceschanged = () => {};
+
+renderDialogue();
+</script>
+</body>
+</html>
