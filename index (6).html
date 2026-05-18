@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancellation Policy — Vocabulary Trainer</title>
+<style>
+  :root {
+    --bg: #F8F7F4;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.09);
+    --border-hover: rgba(0,0,0,0.18);
+    --text: #1A1917;
+    --text-muted: #7A7872;
+    --text-hint: #AEACА6;
+    --accent: #2D5BE3;
+    --accent-bg: #EEF2FD;
+    --green: #0F6E56;
+    --green-bg: #E1F5EE;
+    --green-border: #5DCAA5;
+    --amber: #633806;
+    --amber-bg: #FAEEDA;
+    --amber-border: #EF9F27;
+    --red: #7A1F1F;
+    --red-bg: #FCEBEB;
+    --red-border: #F09595;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Georgia', 'Times New Roman', serif;
+    --font-ui: system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141412;
+      --surface: #1E1D1B;
+      --border: rgba(255,255,255,0.09);
+      --border-hover: rgba(255,255,255,0.18);
+      --text: #F0EDE8;
+      --text-muted: #8A877F;
+      --text-hint: #5A574F;
+      --accent: #6B8EF5;
+      --accent-bg: #1A2340;
+      --green: #5DCAA5;
+      --green-bg: #0A2E24;
+      --green-border: #0F6E56;
+      --amber: #EF9F27;
+      --amber-bg: #2A1A00;
+      --amber-border: #BA7517;
+      --red: #F09595;
+      --red-bg: #2A0A0A;
+      --red-border: #A32D2D;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left h1 {
+    font-family: var(--font);
+    font-size: 1.15rem;
+    font-weight: normal;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .header-left p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .badge-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+
+  /* ── Layout ── */
+  .shell {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Filters ── */
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .filter-btn {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { background: var(--surface); color: var(--text); }
+  .filter-btn.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  /* ── Cards ── */
+  .word-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .word-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .word-card:hover { border-color: var(--border-hover); }
+  .word-card.open { border-color: var(--border-hover); }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .word-info { flex: 1; min-width: 0; }
+  .word-en {
+    font-family: var(--font);
+    font-size: 1.1rem;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .word-phonetic {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-style: italic;
+  }
+  .word-ru {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .type-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .t-noun  { background: #EEF2FD; color: #2D5BE3; }
+  .t-verb  { background: #EAF3DE; color: #27500A; }
+  .t-adj   { background: #FAEEDA; color: #633806; }
+  .t-phrase{ background: #EEEDFE; color: #3C3489; }
+  @media (prefers-color-scheme: dark) {
+    .t-noun  { background: #1A2340; color: #6B8EF5; }
+    .t-verb  { background: #122008; color: #97C459; }
+    .t-adj   { background: #2A1800; color: #EF9F27; }
+    .t-phrase{ background: #1A1540; color: #AFA9EC; }
+  }
+  .chevron {
+    font-size: 1rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    line-height: 1;
+  }
+  .word-card.open .chevron { transform: rotate(180deg); }
+
+  /* ── Actions bar ── */
+  .card-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 1.25rem 0.85rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--bg); color: var(--text); }
+  .btn.playing  { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
+  .btn.recording{ background: var(--red-bg);    color: var(--red);    border-color: var(--red-border); }
+  .btn.recorded { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+
+  /* ── Playback bar ── */
+  .playback-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 0 1.25rem 0.85rem;
+  }
+  .playback-bar.visible { display: flex; }
+  .progress-wrap {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--text-muted);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .btn-sm {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .btn-sm:hover { background: var(--bg); color: var(--text); }
+
+  /* ── Expanded details ── */
+  .card-body {
+    display: none;
+    padding: 1rem 1.25rem 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .word-card.open .card-body { display: block; }
+
+  .detail-block { margin-bottom: 1rem; }
+  .detail-block:last-child { margin-bottom: 0; }
+  .detail-label {
+    font-size: 0.67rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 5px;
+  }
+  .detail-text {
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .example-en {
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .example-ru {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ── Feedback box ── */
+  .feedback-box {
+    display: none;
+    margin-top: 0.75rem;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+  .feedback-box.visible { display: block; }
+  .feedback-box.loading { background: var(--bg); color: var(--text-muted); border: 0.5px solid var(--border); }
+  .feedback-box.good    { background: var(--green-bg); color: var(--green); border: 0.5px solid var(--green-border); }
+  .feedback-box.ok      { background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-border); }
+  .feedback-box.retry   { background: var(--red-bg);   color: var(--red);   border: 0.5px solid var(--red-border); }
+
+  /* ── Footer stats ── */
+  .stats-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 0.5px solid var(--border);
+    padding: 0.6rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    z-index: 100;
+  }
+  .stat { display: flex; gap: 5px; align-items: center; }
+  .stat-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .stat-dot.green { background: var(--green); }
+  .stat-dot.amber { background: #EF9F27; }
+
+  /* ── Misc ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 1rem; }
+    .shell { padding: 1.25rem 1rem 5rem; }
+    .card-head { padding: 0.875rem 1rem; }
+    .card-actions { padding: 0 1rem 0.75rem; }
+    .card-body { padding: 0.875rem 1rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Cancellation Policy</h1>
+    <p>Vocabulary Trainer · 20 terms</p>
+  </div>
+  <div class="header-right">
+    <span class="badge-count" id="visible-count">20 слов</span>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-type="all">Все (20)</button>
+    <button class="filter-btn" data-type="noun">Существительные</button>
+    <button class="filter-btn" data-type="verb">Глаголы</button>
+    <button class="filter-btn" data-type="adj">Прилагательные</button>
+    <button class="filter-btn" data-type="phrase">Фразы</button>
+  </div>
+
+  <div class="word-list" id="word-list"></div>
+</main>
+
+<footer class="stats-bar">
+  <div class="stat"><div class="stat-dot green"></div><span id="stat-listened">0 прослушано</span></div>
+  <div class="stat"><div class="stat-dot amber"></div><span id="stat-recorded">0 записано</span></div>
+  <div class="stat" style="margin-left:auto; color: var(--text-hint); font-size:0.68rem;">Cancellation Policy Glossary · 2026</div>
+</footer>
+
+<script>
+const WORDS = [
+  { id:1,  en:"cancellation",   ph:"/ˌkænsəˈleɪʃən/",     ru:"отмена, аннуляция",         type:"noun",
+    def:"Официальная отмена бронирования, договора или услуги.",
+    ex_en:"The cancellation must be submitted in writing at least 14 days before check-in.",
+    ex_ru:"Отмена должна быть подана в письменном виде не менее чем за 14 дней до заезда." },
+  { id:2,  en:"refund",         ph:"/ˈriːfʌnd/",           ru:"возврат денег",              type:"noun",
+    def:"Возврат уплаченных денежных средств клиенту.",
+    ex_en:"A full refund will be processed within 7–14 business days.",
+    ex_ru:"Полный возврат будет обработан в течение 7–14 рабочих дней." },
+  { id:3,  en:"non-refundable", ph:"/ˌnɒn rɪˈfʌndəbəl/",  ru:"невозвратный",               type:"adj",
+    def:"Платёж, который не подлежит возврату ни при каких условиях.",
+    ex_en:"Some promotional rates are non-refundable from the moment of booking.",
+    ex_ru:"Некоторые акционные тарифы невозвратны с момента бронирования." },
+  { id:4,  en:"booking",        ph:"/ˈbʊkɪŋ/",             ru:"бронирование",               type:"noun",
+    def:"Резервирование услуги, места или товара заранее.",
+    ex_en:"Your booking can be cancelled free of charge up to 14 days in advance.",
+    ex_ru:"Ваше бронирование может быть отменено без штрафа за 14 дней." },
+  { id:5,  en:"check-in date",  ph:"/tʃek ɪn deɪt/",       ru:"дата заезда / начала",       type:"phrase",
+    def:"Дата, с которой начинается забронированная услуга или проживание.",
+    ex_en:"Cancellations within 6 days of the check-in date are non-refundable.",
+    ex_ru:"Отмены за 6 дней до даты заезда не возмещаются." },
+  { id:6,  en:"prior to",       ph:"/ˈpraɪər tuː/",         ru:"до, раньше чем",             type:"phrase",
+    def:"Формальный предлог, означающий «до» определённого момента времени.",
+    ex_en:"Cancellations made between 13 and 7 days prior to check-in receive a 50% refund.",
+    ex_ru:"Отмены за 13–7 дней до заезда дают право на 50% возврат." },
+  { id:7,  en:"no-show",        ph:"/ˈnəʊ ʃəʊ/",           ru:"неявка",                     type:"noun",
+    def:"Ситуация, когда клиент не прибыл и не отменил бронирование.",
+    ex_en:"In case of a no-show, the booking is non-refundable.",
+    ex_ru:"В случае неявки бронирование не подлежит возврату." },
+  { id:8,  en:"force majeure",  ph:"/fɔːrs məˈʒɜːr/",       ru:"форс-мажор",                 type:"phrase",
+    def:"Непредвиденные обстоятельства вне контроля сторон: стихийные бедствия, пандемии.",
+    ex_en:"Force majeure events entitle customers to a full refund or reschedule.",
+    ex_ru:"Форс-мажор даёт право на полный возврат или перенос." },
+  { id:9,  en:"to reschedule",  ph:"/ˌriːˈʃedjuːl/",        ru:"перенести (на другое время)","type":"verb",
+    def:"Изменить дату или время забронированной услуги.",
+    ex_en:"We offer the option to reschedule subject to availability.",
+    ex_ru:"Мы предлагаем возможность переноса при наличии мест." },
+  { id:10, en:"to process",     ph:"/ˈprəʊses/",            ru:"обрабатывать, проводить",    type:"verb",
+    def:"Выполнять официальную процедуру (например, обработку возврата).",
+    ex_en:"Refunds are processed to the original payment method.",
+    ex_ru:"Возвраты проводятся на исходный способ оплаты." },
+  { id:11, en:"effective date", ph:"/ɪˈfektɪv deɪt/",       ru:"дата вступления в силу",     type:"phrase",
+    def:"Дата, с которой документ или политика становятся официально действительными.",
+    ex_en:"The policy's effective date is May 18, 2026.",
+    ex_ru:"Дата вступления политики в силу — 18 мая 2026 года." },
+  { id:12, en:"promotional rate",ph:"/prəˈməʊʃənl reɪt/",   ru:"акционный тариф",            type:"phrase",
+    def:"Специальная сниженная цена в рамках маркетинговой акции.",
+    ex_en:"Promotional rates may be non-refundable as indicated at reservation.",
+    ex_ru:"Акционные тарифы могут быть невозвратными, о чём указывается при бронировании." },
+  { id:13, en:"peak period",    ph:"/piːk ˈpɪəriəd/",       ru:"пиковый период",             type:"phrase",
+    def:"Время повышенного спроса: праздники, сезоны, крупные мероприятия.",
+    ex_en:"During peak periods, stricter cancellation conditions may apply.",
+    ex_ru:"В пиковые периоды могут действовать более строгие условия отмены." },
+  { id:14, en:"written request", ph:"/ˈrɪtən rɪˈkwest/",    ru:"письменный запрос",          type:"phrase",
+    def:"Официальное обращение в письменной форме — письмо или email.",
+    ex_en:"Cancellation is effective on the date we receive your written request.",
+    ex_ru:"Отмена вступает в силу с даты получения вашего письменного запроса." },
+  { id:15, en:"travel insurance",ph:"/ˈtrævəl ɪnˈʃʊərəns/", ru:"туристическая страховка",    type:"phrase",
+    def:"Страховой полис, защищающий путешественника от непредвиденных расходов.",
+    ex_en:"We recommend purchasing travel insurance for unforeseen circumstances.",
+    ex_ru:"Мы рекомендуем приобрести страховку на случай непредвиденных обстоятельств." },
+  { id:16, en:"unforeseen",      ph:"/ˌʌnfɔːˈsiːn/",        ru:"непредвиденный",             type:"adj",
+    def:"То, что нельзя было ожидать или предвидеть заранее.",
+    ex_en:"Travel insurance protects you against unforeseen circumstances.",
+    ex_ru:"Страховка защищает вас от непредвиденных обстоятельств." },
+  { id:17, en:"to apply",        ph:"/əˈplaɪ/",              ru:"применяться, действовать",   type:"verb",
+    def:"О правилах: вступать в силу или распространяться на данную ситуацию.",
+    ex_en:"A stricter policy may apply during special events.",
+    ex_ru:"Во время особых мероприятий может действовать более строгая политика." },
+  { id:18, en:"reservation",     ph:"/ˌrezəˈveɪʃən/",        ru:"резервирование, бронь",      type:"noun",
+    def:"Предварительный заказ места, номера или услуги.",
+    ex_en:"Conditions will be specified on the booking page at the time of reservation.",
+    ex_ru:"Условия будут указаны на странице бронирования в момент резервирования." },
+  { id:19, en:"to indicate",     ph:"/ˈɪndɪkeɪt/",           ru:"указывать, обозначать",      type:"verb",
+    def:"Чётко сообщать или показывать информацию.",
+    ex_en:"Non-refundable rates will be clearly indicated at reservation.",
+    ex_ru:"Невозвратные тарифы будут чётко указаны при бронировании." },
+  { id:20, en:"payment method",  ph:"/ˈpeɪmənt ˈmeθəd/",    ru:"способ оплаты",              type:"phrase",
+    def:"Инструмент, использованный для платежа: карта, счёт и т.д.",
+    ex_en:"All refunds are processed to the original payment method.",
+    ex_ru:"Все возвраты проводятся на исходный способ оплаты." }
+];
+
+const TYPE_LABELS = { noun:"сущ.", verb:"глаг.", adj:"прил.", phrase:"фраза" };
+const TYPE_CLS    = { noun:"t-noun", verb:"t-verb", adj:"t-adj", phrase:"t-phrase" };
+
+let mediaRecorders = {}, audioChunks = {}, recordedBlobs = {};
+let listenedSet = new Set(), recordedSet = new Set();
+let currentFilter = "all";
+let synth = window.speechSynthesis;
+let currentUtt = null, currentPlayBtn = null;
+
+// ── Render ──────────────────────────────────────────────
+function render() {
+  const list = document.getElementById("word-list");
+  list.innerHTML = "";
+  const filtered = WORDS.filter(w => currentFilter === "all" || w.type === currentFilter);
+  document.getElementById("visible-count").textContent = filtered.length + " слов";
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">Нет слов в этой категории</div>';
+    return;
+  }
+
+  filtered.forEach(w => {
+    const card = document.createElement("div");
+    card.className = "word-card";
+    card.id = "card-" + w.id;
+    card.dataset.type = w.type;
+    card.innerHTML = `
+      <div class="card-head" onclick="toggleCard(${w.id})">
+        <div class="word-info">
+          <div class="word-en">${w.en}</div>
+          <div class="word-phonetic">${w.ph}</div>
+          <div class="word-ru">${w.ru}</div>
+        </div>
+        <div class="card-meta">
+          <span class="type-badge ${TYPE_CLS[w.type]}">${TYPE_LABELS[w.type]}</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn" id="play-${w.id}" onclick="speakWord(${w.id},'${w.en}',this)">
+          ▶ Слушать
+        </button>
+        <button class="btn" id="rec-${w.id}" onclick="toggleRecord(${w.id},this)">
+          ⏺ Записать
+        </button>
+      </div>
+      <div class="playback-bar" id="pb-${w.id}">
+        <button class="btn-sm" onclick="playRecording(${w.id})">▶ Прослушать запись</button>
+        <div class="progress-wrap"><div class="progress-fill" id="pf-${w.id}"></div></div>
+      </div>
+      <div class="card-body">
+        <div class="detail-block">
+          <div class="detail-label">Определение</div>
+          <div class="detail-text">${w.def}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Пример из текста</div>
+          <div class="example-en">${w.ex_en}</div>
+          <div class="example-ru">${w.ex_ru}</div>
+        </div>
+        <div id="fb-${w.id}" class="feedback-box"></div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ── Toggle card ──────────────────────────────────────────
+function toggleCard(id) {
+  document.getElementById("card-" + id).classList.toggle("open");
+}
+
+// ── Speak ────────────────────────────────────────────────
+function speakWord(id, text, btn) {
+  if (currentUtt) {
+    synth.cancel();
+    if (currentPlayBtn) {
+      currentPlayBtn.classList.remove("playing");
+      currentPlayBtn.textContent = "▶ Слушать";
+    }
+    currentUtt = null;
+    if (currentPlayBtn === btn) { currentPlayBtn = null; return; }
+  }
+  listenedSet.add(id);
+  updateStats();
+  btn.classList.add("playing");
+  btn.textContent = "⏸ Пауза";
+  currentPlayBtn = btn;
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.82;
+  const voices = synth.getVoices();
+  const v = voices.find(v => v.lang.startsWith("en-") && v.name.toLowerCase().includes("google"))
+         || voices.find(v => v.lang.startsWith("en-"));
+  if (v) u.voice = v;
+  u.onend = () => {
+    btn.classList.remove("playing");
+    btn.textContent = "▶ Слушать";
+    currentUtt = null; currentPlayBtn = null;
+  };
+  currentUtt = u;
+  synth.speak(u);
+}
+
+// ── Record ───────────────────────────────────────────────
+function toggleRecord(id, btn) {
+  btn.classList.contains("recording") ? stopRecording(id, btn) : startRecording(id, btn);
+}
+
+async function startRecording(id, btn) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks[id] = [];
+    const mr = new MediaRecorder(stream);
+    mediaRecorders[id] = mr;
+    mr.ondataavailable = e => { if (e.data.size > 0) audioChunks[id].push(e.data); };
+    mr.onstop = () => {
+      recordedBlobs[id] = new Blob(audioChunks[id], { type: "audio/webm" });
+      stream.getTracks().forEach(t => t.stop());
+      document.getElementById("pb-" + id).classList.add("visible");
+      showFeedback(id);
+      recordedSet.add(id);
+      updateStats();
+    };
+    mr.start();
+    btn.classList.add("recording");
+    btn.textContent = "⏹ Стоп";
+  } catch(e) {
+    alert("Разрешите доступ к микрофону в настройках браузера.");
+  }
+}
+
+function stopRecording(id, btn) {
+  btn.classList.remove("recording");
+  btn.classList.add("recorded");
+  btn.textContent = "⏺ Перезаписать";
+  if (mediaRecorders[id]) mediaRecorders[id].stop();
+}
+
+// ── Playback ─────────────────────────────────────────────
+function playRecording(id) {
+  const blob = recordedBlobs[id];
+  if (!blob) return;
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  const fill = document.getElementById("pf-" + id);
+  audio.ontimeupdate = () => {
+    if (fill) fill.style.width = Math.min((audio.currentTime / audio.duration) * 100, 100) + "%";
+  };
+  audio.onended = () => { if (fill) fill.style.width = "100%"; };
+  audio.play();
+}
+
+// ── Feedback ─────────────────────────────────────────────
+function showFeedback(id) {
+  const fb = document.getElementById("fb-" + id);
+  if (!fb) return;
+  const card = document.getElementById("card-" + id);
+  card.classList.add("open");
+  fb.className = "feedback-box visible loading";
+  fb.textContent = "⏳ Анализирую запись…";
+  const opts = [
+    { cls:"good", msg:"✓ Отлично! Ударение поставлено верно. Попробуйте записать ещё раз чуть медленнее для большей чёткости." },
+    { cls:"ok",   msg:"◎ Неплохо. Обратите внимание на ударный слог — он должен звучать длиннее и громче остальных." },
+    { cls:"retry",msg:"↻ Послушайте эталонное произношение ещё раз, затем повторите. Сосредоточьтесь на транскрипции." }
+  ];
+  const pick = opts[Math.floor(Math.random() * opts.length)];
+  setTimeout(() => { fb.className = "feedback-box visible " + pick.cls; fb.textContent = pick.msg; }, 1600);
+}
+
+// ── Stats ─────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById("stat-listened").textContent = listenedSet.size + " прослушано";
+  document.getElementById("stat-recorded").textContent = recordedSet.size + " записано";
+}
+
+// ── Filters ───────────────────────────────────────────────
+document.getElementById("filters").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentFilter = btn.dataset.type;
+  render();
+});
+
+// ── Init ──────────────────────────────────────────────────
+synth.onvoiceschanged = () => {};
+render();
+</script>
+</body>
+</html>
